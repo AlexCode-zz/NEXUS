@@ -1,42 +1,94 @@
+/* ==========================================================================
+   NEXUS — Adaptación móvil y accesibilidad
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  #nexus-ui {
+    grid-template-columns: 220px 1fr 220px;
+    padding: 10px;
+    gap: 10px;
+  }
+  .nexus-logo { font-size: 1.3rem; }
+  .interaction-modes { grid-template-columns: repeat(3, 1fr); }
+}
+
 @media (max-width: 768px) {
-  #nexus-hud {
-    padding: 1rem;
+  #nexus-ui {
+    grid-template-areas:
+      "header"
+      "left"
+      "right"
+      "footer";
+    grid-template-columns: 1fr;
+    grid-template-rows: 52px 1fr 1fr 44px;
+    padding: 8px;
+    gap: 8px;
   }
 
-  .nexus-logo {
-    font-size: 1.4rem;
+  .nexus-header { padding: 0 10px; gap: 10px; }
+  .telemetry-box { gap: 12px; font-size: 0.7rem; }
+  .t-val { font-size: 0.72rem; }
+
+  .nexus-sidebar {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    padding: 10px;
   }
 
-  .hud-subtitle {
-    font-size: 0.75rem;
+  .left-sidebar,
+  .right-sidebar {
+    overflow-y: auto;
+    max-height: 40vh;
   }
 
-  .hud-status {
-    top: 1rem;
-    right: 1rem;
-    padding: 0.4rem 0.8rem;
-  }
+  .btn-grid { grid-template-columns: 1fr 1fr; gap: 7px; }
+  .interaction-modes { grid-template-columns: repeat(5, 1fr); }
+  .mode-btn { font-size: 0.62rem; padding: 5px 4px; }
+
+  .nexus-logo { font-size: 1.2rem; }
+  .nexus-subtitle { font-size: 0.58rem; }
+}
+
+@media (max-width: 480px) {
+  #nexus-ui { grid-template-rows: 48px 1fr 1fr 40px; padding: 6px; gap: 6px; }
+  .nexus-header { padding: 0 8px; }
+  .brand-box { gap: 1px; }
+  .nexus-logo { font-size: 1.05rem; letter-spacing: 0.2em; }
+  .telemetry-box { gap: 8px; }
+  .t-label { font-size: 0.52rem; }
+  .t-val { font-size: 0.66rem; }
+  .nexus-sidebar { padding: 8px; gap: 8px; }
+  .section-title { font-size: 0.62rem; }
+  .nexus-btn { font-size: 0.7rem; padding: 7px 9px; }
+  .interaction-modes { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .mode-btn { font-size: 0.58rem; padding: 5px 3px; }
+  .ctrl-label { font-size: 0.62rem; }
+  .ctrl-val { font-size: 0.64rem; min-width: 36px; }
+  input[type="range"]::-webkit-slider-thumb { width: 12px; height: 12px; }
+  .nexus-footer { padding: 0 8px; font-size: 0.62rem; }
+  .footer-shortcuts { gap: 10px; }
 }
 
 /* Accesibilidad */
 :focus-visible {
-  outline: 2px solid #00ffcc;
+  outline: 2px solid var(--accent-color);
   outline-offset: 2px;
 }
 
 button:focus, button:hover {
   background: rgba(0, 255, 204, 0.1);
-  color: #00ffcc;
+  color: var(--accent-color);
 }
 
-/* Controles táctiles */
+/* Controles táctiles: área mínima de toque */
 @media (pointer: coarse) {
-  button {
-    min-height: 48px;
-    font-size: 0.9rem;
-  }
+  button { min-height: 44px; font-size: 0.85rem; }
+  .control-group { margin-bottom: 10px; }
+}
 
-  .control-group {
-    margin-bottom: 15px;
-  }
+/* Preferencia de movimiento reducido: desactivar animaciones decorativas */
+@media (prefers-reduced-motion: reduce) {
+  .pulse-dot { animation: none; opacity: 0.9; }
+  *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
