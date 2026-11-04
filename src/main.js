@@ -221,6 +221,24 @@ class NexusApp {
     this.updateActiveWorldInfo(displayName);
     this._syncControlsToWorld(worldName);
     this._setStatus('SYSTEM ONLINE — WEBGL ACTIVE', true);
+    // Posicionar la cámara según el universo para que el contenido sea visible
+    this._positionCameraForWorld(worldName);
+  }
+
+  _positionCameraForWorld(worldName) {
+    const positions = {
+      cosmos: { x: 0, y: 0, z: 30 },
+      cyberspace: { x: 0, y: 8, z: 22 },
+      solaris: { x: 0, y: 6, z: 24 },
+      singularity: { x: 0, y: 0, z: 22 }
+    };
+    const p = positions[worldName] || positions.cosmos;
+    const cam = this.camera.instance;
+    cam.position.set(p.x, p.y, p.z);
+    cam.lookAt(0, 0, 0);
+    if (this.camera.controls) {
+      this.camera.controls.update();
+    }
   }
 
   generateNewComposition() {
