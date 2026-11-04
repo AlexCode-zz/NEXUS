@@ -1,3 +1,91 @@
+:root {
+  --bg-color: #030305;
+  --panel-bg: rgba(10, 12, 18, 0.85);
+  --border-color: rgba(0, 255, 204, 0.2);
+  --accent-color: #00ffcc;
+  --text-main: #e0e0e0;
+  --text-dim: #8888a0;
+  --font-mono: 'Courier New', Courier, monospace;
+  --contrast-ratio: 4.5; /* Suficiente para accesibilidad */
+}
+
+#nexus-ui {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  padding: 20px;
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "left right";
+  grid-template-columns: 250px 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 20px;
+}
+
+/* Header */
+.ui-header {
+  grid-area: header;
+  pointer-events: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+.logo { font-size: 1.5rem; font-weight: 800; letter-spacing: 0.2em; color: var(--accent-color); }
+.fps-counter { font-family: var(--font-mono); color: var(--text-dim); }
+
+/* Left Panel */
+.ui-left {
+  grid-area: left;
+  pointer-events: auto;
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  border-radius: 4px;
+}
+
+.control-group { margin-bottom: 20px; }
+.label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 5px; }
+
+button {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 8px;
+  cursor: pointer;
+  margin-bottom: 5px;
+  transition: all 0.3s;
+}
+
+button:hover, button:focus {
+  background: var(--accent-color);
+  color: #000;
+}
+
+/* Right Info */
+.ui-right {
+  grid-area: right;
+  pointer-events: none;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.info-panel {
+  pointer-events: auto;
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  padding: 15px;
+  font-size: 0.8rem;
+}
+
 /* Estilos para Modal de Galería */
 .nexus-modal {
   position: fixed;
@@ -39,18 +127,18 @@
 .modal-header h2 {
   font-size: 1.1rem;
   letter-spacing: 0.15em;
-  color: #00ffcc;
+  color: var(--accent-color);
 }
 
 .close-btn {
   background: none;
   border: none;
-  color: #8888a0;
+  color: var(--text-dim);
   cursor: pointer;
-  font-family: monospace;
+  font-family: var(--font-mono);
   font-size: 1rem;
 }
-.close-btn:hover { color: #00ffcc; background: none; }
+.close-btn:hover { color: var(--accent-color); background: none; }
 
 .modal-actions {
   display: flex;
@@ -112,7 +200,7 @@
 
 .card-info p {
   font-size: 0.75rem;
-  color: #8888a0;
+  color: var(--text-dim);
   margin: 2px 0;
 }
 
@@ -136,6 +224,6 @@
 .no-items {
   grid-column: 1 / -1;
   text-align: center;
-  color: #8888a0;
+  color: var(--text-dim);
   padding: 40px;
 }

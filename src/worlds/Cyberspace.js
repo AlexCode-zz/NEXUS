@@ -1,11 +1,13 @@
 import * as THREE from 'three';
 
 export class Cyberspace {
-  constructor(scene) {
+  constructor(scene, qualitySettings) {
     this.scene = scene;
     this.group = new THREE.Group();
+    this.qualitySettings = qualitySettings || {};
+
     this.params = {
-      nodeCount: 150,
+      nodeCount: qualitySettings.maxParticles || 150,
       connectDistance: 3.5,
       bounds: 12,
       nodeColor: 0x00ffcc,

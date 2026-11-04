@@ -17,3 +17,26 @@
     padding: 0.4rem 0.8rem;
   }
 }
+
+/* Accesibilidad */
+:focus-visible {
+  outline: 2px solid #00ffcc;
+  outline-offset: 2px;
+}
+
+button:focus, button:hover {
+  background: rgba(0, 255, 204, 0.1);
+  color: #00ffcc;
+}
+
+/* Controles táctiles */
+@media (pointer: coarse) {
+  button {
+    min-height: 48px;
+    font-size: 0.9rem;
+  }
+
+  .control-group {
+    margin-bottom: 15px;
+  }
+}

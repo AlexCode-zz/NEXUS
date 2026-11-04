@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 
 export class Cosmos {
-  constructor(scene) {
+  constructor(scene, qualitySettings) {
     this.scene = scene;
     this.mesh = null;
     this.material = null;
+    this.qualitySettings = qualitySettings || {};
+
     this.params = {
-      particleCount: 8000,
+      particleCount: qualitySettings.maxParticles || 8000,
       arms: 4,
       radius: 15,
       spin: 1,

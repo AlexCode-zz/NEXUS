@@ -4,14 +4,15 @@ import { Solaris } from './Solaris.js';
 import { Singularity } from './Singularity.js';
 
 export class WorldManager {
-  constructor(scene) {
+  constructor(scene, qualitySettings) {
     this.scene = scene;
+    this.qualitySettings = qualitySettings || {};
     this.currentWorld = null;
     this.worlds = {
-      cosmos: new Cosmos(scene),
-      cyberspace: new Cyberspace(scene),
-      solaris: new Solaris(scene),
-      singularity: new Singularity(scene)
+      cosmos: new Cosmos(scene, qualitySettings),
+      cyberspace: new Cyberspace(scene, qualitySettings),
+      solaris: new Solaris(scene, qualitySettings),
+      singularity: new Singularity(scene, qualitySettings)
     };
     this.transitioning = false;
     this.transitionProgress = 0;

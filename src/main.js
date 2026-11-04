@@ -31,16 +31,36 @@ class NexusApp {
       // Cargar interfaz si existe
       await this.loadInterface();
 
+      // Detectar preferencias de rendimiento
+      this.qualitySettings = {
+        maxParticles: 10000,
+        particleSize: 1.0,
+        qualityLevel: 'high'
+      };
+
+      // Detectar dispositivo y ajustar calidad
+      if (window.innerWidth < 768 || /Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+        this.qualitySettings.maxParticles = 3000;
+        this.qualitySettings.particleSize = 0.7;
+        this.qualitySettings.qualityLevel = 'medium';
+      }
+
+      // Respetar prefers-reduced-motion
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        this.qualitySettings.qualityLevel = 'low';
+        this.qualitySettings.maxParticles = 1500;
+      }
+
       // Inicializar componentes core 3D
       this.scene = new Scene();
       this.camera = new Camera();
-      this.renderer = new Renderer(this.canvas);
+      this.renderer = new Renderer(this.canvas, this.qualitySettings);
 
       // Configurar controles de cámara
       this.camera.controls = new OrbitControls(this.camera, this.canvas);
 
       // Inicializar Gestor de Universos
-      this.worldManager = new WorldManager(this.scene);
+      this.worldManager = new WorldManager(this.scene, this.qualitySettings);
       this.worldManager.activateWorld('cosmos');
 
       // Inicializar Controlador de Interacción
@@ -55,7 +75,7 @@ class NexusApp {
       // Configurar eventos de usuario
       this.setupControls();
 
-      // Bucle de animación con FPS Counter
+      // Bucle de animación con FPS Counter y optimización
       let lastTime = performance.now();
       let frames = 0;
 
@@ -79,8 +99,16 @@ class NexusApp {
         }
       });
 
-      // Manejar redimensionamiento
-      window.addEventListener('resize', () => this.onResize());
+      // Pausar render cuando la pestaña esté oculta (Page Visibility API)
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          this.animationLoop.stop();
+          console.log('NEXUS pausado (pestaña oculta)');
+        } else {
+          this.animationLoop.start();
+          console.log('NEXUS reanudado');
+        }
+      });
 
       // Iniciar renderizado
       this.animationLoop.start();

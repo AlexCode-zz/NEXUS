@@ -1,12 +1,16 @@
 import * as THREE from 'three';
 
 export class Solaris {
-  constructor(scene) {
+  constructor(scene, qualitySettings) {
     this.scene = scene;
     this.mesh = null;
     this.material = null;
+    this.qualitySettings = qualitySettings || {};
+
+    const gridSize = qualitySettings.maxParticles ? Math.floor(Math.sqrt(qualitySettings.maxParticles)) : 100;
+
     this.params = {
-      gridSize: 100,
+      gridSize: gridSize,
       spacing: 0.25,
       goldColor: 0xffaa00,
       amberColor: 0xff4400,

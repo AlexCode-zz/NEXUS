@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 
 export class Singularity {
-  constructor(scene) {
+  constructor(scene, qualitySettings) {
     this.scene = scene;
     this.mesh = null;
     this.material = null;
+    this.qualitySettings = qualitySettings || {};
+
     this.params = {
-      particleCount: 10000,
+      particleCount: qualitySettings.maxParticles || 10000,
       eventHorizonRadius: 1.5,
       accretionDiskRadius: 10,
       coreColor: 0x000000,
