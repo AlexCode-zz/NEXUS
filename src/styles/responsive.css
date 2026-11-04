@@ -1,0 +1,19 @@
+@media (max-width: 768px) {
+  #nexus-hud {
+    padding: 1rem;
+  }
+
+  .nexus-logo {
+    font-size: 1.4rem;
+  }
+
+  .hud-subtitle {
+    font-size: 0.75rem;
+  }
+
+  .hud-status {
+    top: 1rem;
+    right: 1rem;
+    padding: 0.4rem 0.8rem;
+  }
+}

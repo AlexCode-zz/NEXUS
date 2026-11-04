@@ -1,0 +1,76 @@
+#nexus-hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2rem;
+}
+
+.hud-header, .hud-status, .hud-footer {
+  pointer-events: auto;
+}
+
+.nexus-logo {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  color: var(--text-color);
+  text-shadow: 0 0 20px var(--accent-glow);
+}
+
+.hud-subtitle {
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  color: #8888a0;
+  margin-top: 0.2rem;
+  text-transform: uppercase;
+}
+
+.hud-status {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(10, 10, 20, 0.6);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 255, 204, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-color);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--accent-color);
+  animation: pulse 2s infinite;
+}
+
+.status-text {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #ccc;
+}
+
+.hud-footer {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: #666680;
+  text-transform: uppercase;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 15px var(--accent-color); }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
