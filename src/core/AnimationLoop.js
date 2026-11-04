@@ -6,6 +6,7 @@ export class AnimationLoop {
     this.clock = new THREE.Clock();
     this.isLooping = false;
     this.callbacks = [];
+    this.rafId = null;
   }
 
   addCallback(fn) {
@@ -37,6 +38,16 @@ export class AnimationLoop {
       this.renderCallback(delta, elapsedTime);
     }
 
-    requestAnimationFrame(() => this.tick());
+    this.rafId = requestAnimationFrame(() => this.tick());
+  }
+
+  destroy() {
+    this.stop();
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+    this.callbacks = [];
+    this.renderCallback = null;
   }
 }
