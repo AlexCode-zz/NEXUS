@@ -110,7 +110,9 @@ export class Cosmos {
     geometry.setAttribute('aHeight', new THREE.BufferAttribute(heightArr, 1));
 
     const pixelRatio = Math.min(window.devicePixelRatio, 2);
-    const baseSize = (this.qualitySettings.particleSize || 1.0) * 2.6;
+    // Tamaño en píxeles: el shader lo escala por (240 / distancia). Un factor
+    // pequeño evita que las partículas se conviertan en discos enormes.
+    const baseSize = (this.qualitySettings.particleSize || 1.0) * 0.34;
 
     this.material = new THREE.ShaderMaterial({
       uniforms: {
@@ -163,6 +165,8 @@ export class Cosmos {
         }
       `,
       fragmentShader: `
+        uniform float uGlow;
+
         varying vec3 vColor;
         varying float vDist;
         varying float vAlpha;

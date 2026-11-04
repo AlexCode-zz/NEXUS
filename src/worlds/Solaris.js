@@ -86,7 +86,7 @@ export class Solaris {
     geometry.setAttribute('aScale', new THREE.BufferAttribute(scales, 1));
 
     const pixelRatio = Math.min(window.devicePixelRatio, 2);
-    const baseSize = (this.qualitySettings.particleSize || 1.0) * 2.2;
+    const baseSize = (this.qualitySettings.particleSize || 1.0) * 0.3;
 
     this.material = new THREE.ShaderMaterial({
       uniforms: {
@@ -124,6 +124,8 @@ export class Solaris {
         }
       `,
       fragmentShader: `
+        uniform float uGlow;
+
         varying vec3 vColor;
         varying float vHeight;
         varying float vDist;

@@ -92,7 +92,7 @@ export class Singularity {
     geometry.setAttribute('aDistance', new THREE.BufferAttribute(distances, 1));
 
     const pixelRatio = Math.min(window.devicePixelRatio, 2);
-    const baseSize = (this.qualitySettings.particleSize || 1.0) * 2.4;
+    const baseSize = (this.qualitySettings.particleSize || 1.0) * 0.32;
 
     this.material = new THREE.ShaderMaterial({
       uniforms: {
@@ -137,6 +137,8 @@ export class Singularity {
         }
       `,
       fragmentShader: `
+        uniform float uGlow;
+
         varying vec3 vColor;
         varying float vDist;
         void main() {

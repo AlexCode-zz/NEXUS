@@ -227,10 +227,12 @@ class NexusApp {
 
   _positionCameraForWorld(worldName) {
     const positions = {
-      cosmos: { x: 0, y: 0, z: 30 },
-      cyberspace: { x: 0, y: 8, z: 22 },
-      solaris: { x: 0, y: 6, z: 24 },
-      singularity: { x: 0, y: 0, z: 22 }
+      // Vista inclinada sobre el plano galáctico para apreciar los brazos espirales
+      cosmos: { x: 0, y: 22, z: 32 },
+      cyberspace: { x: 0, y: 7, z: 18 },
+      // Vista elevada para contemplar las olas / el disco de acreción
+      solaris: { x: 0, y: 18, z: 26 },
+      singularity: { x: 0, y: 14, z: 24 }
     };
     const p = positions[worldName] || positions.cosmos;
     const cam = this.camera.instance;
