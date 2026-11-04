@@ -5,85 +5,364 @@
   --accent-color: #00ffcc;
   --text-main: #e0e0e0;
   --text-dim: #8888a0;
+  --text-error: #ff4444;
   --font-mono: 'Courier New', Courier, monospace;
-  --contrast-ratio: 4.5; /* Suficiente para accesibilidad */
+  --contrast-ratio: 4.5;
+  --transition-speed: 0.3s;
 }
 
-#nexus-ui {
+/* Estilos Base */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  overflow: hidden;
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#nexus-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 1;
+}
+
+/* Interfaz NEXUS Rediseñada */
+.nexus-ui-container {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
-  padding: 20px;
   display: grid;
   grid-template-areas:
-    "header header"
-    "left right";
-  grid-template-columns: 250px 1fr;
-  grid-template-rows: auto 1fr;
-  gap: 20px;
+    "header header header"
+    "left main right"
+    "footer footer footer";
+  grid-template-columns: 280px 1fr 280px;
+  grid-template-rows: 60px 1fr 50px;
+  gap: 10px;
+  padding: 20px;
 }
 
 /* Header */
-.ui-header {
+.nexus-header {
   grid-area: header;
   pointer-events: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0 20px;
   border-bottom: 1px solid var(--border-color);
-  padding-bottom: 10px;
 }
 
-.logo { font-size: 1.5rem; font-weight: 800; letter-spacing: 0.2em; color: var(--accent-color); }
-.fps-counter { font-family: var(--font-mono); color: var(--text-dim); }
+.brand-box {
+  display: flex;
+  flex-direction: column;
+}
 
-/* Left Panel */
-.ui-left {
-  grid-area: left;
+.nexus-logo {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  color: var(--accent-color);
+  text-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
+  margin: 0;
+}
+
+.nexus-subtitle {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.telemetry-box {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.telemetry-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.t-label {
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.t-val {
+  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  color: var(--text-main);
+}
+
+/* Botones de Icono */
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px;
+  transition: all var(--transition-speed);
+}
+
+.icon-btn:hover {
+  color: var(--accent-color);
+}
+
+/* Paneles Laterales */
+.nexus-sidebar {
   pointer-events: auto;
   background: var(--panel-bg);
   border: 1px solid var(--border-color);
-  padding: 20px;
   border-radius: 4px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.control-group { margin-bottom: 20px; }
-.label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 5px; }
+.left-sidebar {
+  grid-area: left;
+}
 
-button {
+.right-sidebar {
+  grid-area: right;
+}
+
+.panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section-title {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 5px 0;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Botones NEXUS */
+.nexus-btn {
   width: 100%;
   background: transparent;
   border: 1px solid var(--border-color);
   color: var(--text-main);
-  padding: 8px;
+  padding: 8px 12px;
   cursor: pointer;
-  margin-bottom: 5px;
-  transition: all 0.3s;
+  transition: all var(--transition-speed);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-button:hover, button:focus {
+.nexus-btn:hover {
+  background: rgba(0, 255, 204, 0.1);
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.nexus-btn.active {
   background: var(--accent-color);
   color: #000;
+  border-color: var(--accent-color);
 }
 
-/* Right Info */
-.ui-right {
-  grid-area: right;
-  pointer-events: none;
+.nexus-btn.accent {
+  background: var(--accent-color);
+  color: #000;
+  border-color: var(--accent-color);
+}
+
+.nexus-btn.danger {
+  background: rgba(255, 68, 68, 0.2);
+  color: var(--text-error);
+  border-color: var(--text-error);
+}
+
+.nexus-btn.danger:hover {
+  background: rgba(255, 68, 68, 0.3);
+}
+
+/* Grids y Stacks */
+.btn-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.btn-stack {
   display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.info-panel {
-  pointer-events: auto;
-  background: var(--panel-bg);
+/* Modos de Interacción */
+.interaction-modes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.mode-btn {
+  background: transparent;
   border: 1px solid var(--border-color);
-  padding: 15px;
+  color: var(--text-main);
+  padding: 6px;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mode-btn:hover {
+  background: rgba(0, 255, 204, 0.1);
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.mode-btn.active {
+  background: var(--accent-color);
+  color: #000;
+  border-color: var(--accent-color);
+}
+
+/* Readouts */
+.telemetry-readouts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.readout-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.r-label {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.r-val {
   font-size: 0.8rem;
+  font-family: var(--font-mono);
+  color: var(--text-main);
+}
+
+/* Footer */
+.nexus-footer {
+  grid-area: footer;
+  pointer-events: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.footer-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-color);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--accent-color);
+  animation: pulse 2s infinite;
+}
+
+.footer-shortcuts {
+  display: flex;
+  gap: 20px;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+/* Animaciones */
+@keyframes pulse {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; box-shadow: 0 0 15px var(--accent-color); }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .nexus-ui-container {
+    grid-template-columns: 240px 1fr 240px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .nexus-ui-container {
+    grid-template-columns: 200px 1fr 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .nexus-ui-container {
+    grid-template-areas:
+      "header"
+      "main"
+      "footer";
+    grid-template-columns: 1fr;
+    grid-template-rows: 60px 1fr 50px;
+    padding: 10px;
+  }
+
+  .nexus-sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: 1px solid var(--border-color);
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 10px;
+  }
+
+  .panel-section {
+    min-width: 200px;
+  }
+
+  .interaction-modes {
+    grid-template-columns: repeat(5, 1fr);
+  }
 }
 
 /* Estilos para Modal de Galería */

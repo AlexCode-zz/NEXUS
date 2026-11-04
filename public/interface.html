@@ -1,24 +1,121 @@
-<div id="nexus-ui">
-  <header class="ui-header">
-    <div class="logo">NEXUS_LAB</div>
-    <div class="fps-counter" id="fps">FPS: 60</div>
-  </header>
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXUS — Laboratorio Visual de Universos Generativos</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Canvas 3D -->
+      <canvas id="nexus-canvas"></canvas>
 
-  <aside class="ui-left">
-    <div class="control-group">
-      <div class="label">Universes</div>
-      <button onclick="window.nexusApp.worldManager.activateWorld('cosmos')">COSMOS</button>
-      <button onclick="window.nexusApp.worldManager.activateWorld('cyberspace')">CYBER</button>
-      <button onclick="window.nexusApp.worldManager.activateWorld('solaris')">SOLARIS</button>
-      <button onclick="window.nexusApp.worldManager.activateWorld('singularity')">VOID</button>
-    </div>
-    <div class="control-group">
-      <div class="label">Actions</div>
-      <button onclick="location.reload()">RESET</button>
-    </div>
-  </aside>
+      <!-- Interfaz NEXUS Rediseñada (Profesional & Cinematográfica) -->
+      <div id="nexus-ui" class="nexus-ui-container">
+        <!-- Header -->
+        <header class="nexus-header">
+          <div class="brand-box">
+            <h1 class="nexus-logo">NEXUS</h1>
+            <span class="nexus-subtitle">GENERATIVE UNIVERSE LAB</span>
+          </div>
+          <div class="telemetry-box">
+            <div class="telemetry-item">
+              <span class="t-label">ENGINE:</span>
+              <span class="t-val" id="engine-status">ACTIVE</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="t-label">FPS:</span>
+              <span class="t-val" id="fps">60</span>
+            </div>
+            <button class="icon-btn" onclick="document.documentElement.requestFullscreen()" title="Pantalla Completa">⛶</button>
+          </div>
+        </header>
 
-  <div class="ui-right">
-    <div class="info-panel" id="active-world">Universe: Cosmos</div>
-  </div>
-</div>
+        <!-- Panel Izquierdo: Universos y Acciones -->
+        <aside class="nexus-sidebar left-sidebar">
+          <div class="panel-section">
+            <h3 class="section-title">UNIVERSES</h3>
+            <div class="btn-grid">
+              <button class="nexus-btn active" onclick="window.nexusApp.worldManager.activateWorld('cosmos'); window.nexusApp.updateActiveWorldInfo('Cosmos')">COSMOS</button>
+              <button class="nexus-btn" onclick="window.nexusApp.worldManager.activateWorld('cyberspace'); window.nexusApp.updateActiveWorldInfo('Cyberspace')">CYBER</button>
+              <button class="nexus-btn" onclick="window.nexusApp.worldManager.activateWorld('solaris'); window.nexusApp.updateActiveWorldInfo('Solaris')">SOLARIS</button>
+              <button class="nexus-btn" onclick="window.nexusApp.worldManager.activateWorld('singularity'); window.nexusApp.updateActiveWorldInfo('Singularity')">VOID</button>
+            </div>
+          </div>
+
+          <div class="panel-section">
+            <h3 class="section-title">PROCEDURAL ENGINE</h3>
+            <div class="btn-stack">
+              <button class="nexus-btn accent" onclick="window.nexusApp.generateNewComposition()">GENERATE</button>
+              <button class="nexus-btn" onclick="window.nexusApp.randomizeParams()">RANDOMIZE</button>
+              <button class="nexus-btn" onclick="window.nexusApp.showSeedDialog()">SEED INPUT</button>
+            </div>
+          </div>
+
+          <div class="panel-section">
+            <h3 class="section-title">SYSTEM</h3>
+            <div class="btn-stack">
+              <button class="nexus-btn" onclick="window.nexusApp.galleryUI.toggleGallery(true)">GALLERY / ARCHIVE</button>
+              <button class="nexus-btn" onclick="window.nexusApp.galleryUI.captureScreenshot()">SCREENSHOT</button>
+              <button class="nexus-btn danger" onclick="location.reload()">RESET SYSTEM</button>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Panel Derecho: Parámetros y Controles Visuales -->
+        <aside class="nexus-sidebar right-sidebar">
+          <div class="panel-section">
+            <h3 class="section-title">INTERACTION MODES</h3>
+            <div class="interaction-modes">
+              <button class="mode-btn active" onclick="window.nexusApp.interactionController.currentEffect = 'attraction'">ATTRACT</button>
+              <button class="mode-btn" onclick="window.nexusApp.interactionController.currentEffect = 'repulsion'">REPULSE</button>
+              <button class="mode-btn" onclick="window.nexusApp.interactionController.currentEffect = 'turbulence'">TURBULENCE</button>
+              <button class="mode-btn" onclick="window.nexusApp.interactionController.currentEffect = 'gravity'">GRAVITY</button>
+              <button class="mode-btn" onclick="window.nexusApp.interactionController.currentEffect = 'rotation'">ORBIT</button>
+            </div>
+          </div>
+
+          <div class="panel-section">
+            <h3 class="section-title">TELEMETRY & INFO</h3>
+            <div class="telemetry-readouts">
+              <div class="readout-row">
+                <span class="r-label">ACTIVE UNIVERSE</span>
+                <span class="r-val" id="active-world">Cosmos</span>
+              </div>
+              <div class="readout-row">
+                <span class="r-label">PARTICLE COUNT</span>
+                <span class="r-val" id="particle-count">5,000</span>
+              </div>
+              <div class="readout-row">
+                <span class="r-label">CURRENT SEED</span>
+                <span class="r-val" id="current-seed">12345</span>
+              </div>
+              <div class="readout-row">
+                <span class="r-label">INTERACTION RADIUS</span>
+                <span class="r-val" id="inter-radius">3.0</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Footer / Zona Inferior -->
+        <footer class="nexus-footer">
+          <div class="footer-status">
+            <span class="pulse-dot"></span>
+            <span>SYSTEM ONLINE — WEBGL ACTIVE — INTERACTIVE GENERATIVE LAB</span>
+          </div>
+          <div class="footer-shortcuts">
+            <span>[1-4] UNIVERSES</span>
+            <span>[G] GENERATE</span>
+            <span>[R] RANDOMIZE</span>
+            <span>[P] GALLERY</span>
+            <span>[X] CAPTURE</span>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

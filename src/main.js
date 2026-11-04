@@ -59,6 +59,38 @@ class NexusApp {
       // Configurar controles de cámara
       this.camera.controls = new OrbitControls(this.camera, this.canvas);
 
+      // Añadir luz ambiental
+      const ambientLight = new THREE.AmbientLight(0x404040);
+      this.scene.add(ambientLight);
+
+      // Añadir luz direccional
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+      directionalLight.position.set(1, 1, 1);
+      this.scene.add(directionalLight);
+
+      // Crear esfera de diagnóstico
+      const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
+      const sphereMaterial = new THREE.MeshPhongMaterial({
+        color: 0x00ffcc,
+        emissive: 0x003333,
+        specular: 0x111111,
+        shininess: 30
+      });
+      this.diagnosticSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+      this.scene.add(this.diagnosticSphere);
+
+      // Crear cubo de diagnóstico
+      const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+      const cubeMaterial = new THREE.MeshPhongMaterial({
+        color: 0xff0055,
+        emissive: 0x330011,
+        specular: 0x111111,
+        shininess: 30
+      });
+      this.diagnosticCube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+      this.diagnosticCube.position.set(2, 0, 0);
+      this.scene.add(this.diagnosticCube);
+
       // Inicializar Gestor de Universos
       this.worldManager = new WorldManager(this.scene, this.qualitySettings);
       this.worldManager.activateWorld('cosmos');
@@ -80,6 +112,11 @@ class NexusApp {
       let frames = 0;
 
       this.animationLoop = new AnimationLoop((delta, elapsedTime) => {
+        // Rotar objetos de diagnóstico
+        this.diagnosticSphere.rotation.y += delta * 0.5;
+        this.diagnosticCube.rotation.x += delta * 0.3;
+        this.diagnosticCube.rotation.y += delta * 0.2;
+
         this.camera.update();
         if (this.worldManager) {
           this.worldManager.update(delta, elapsedTime);
