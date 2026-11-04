@@ -10,6 +10,7 @@ import { AnimationLoop } from './core/AnimationLoop.js';
 import { OrbitControls } from './core/OrbitControls.js';
 import { WorldManager } from './worlds/WorldManager.js';
 import { InteractionController } from './controls/InteractionController.js';
+import { ProceduralEngine } from './utils/ProceduralEngine.js';
 
 class NexusApp {
   constructor() {
@@ -43,6 +44,9 @@ class NexusApp {
 
       // Inicializar Controlador de Interacción
       this.interactionController = new InteractionController(this.camera, this.renderer, this.worldManager);
+
+      // Inicializar Motor Procedural
+      this.proceduralEngine = new ProceduralEngine();
 
       // Configurar eventos de usuario
       this.setupControls();
@@ -115,15 +119,46 @@ class NexusApp {
         this.worldManager.activateWorld('singularity');
         this.updateActiveWorldInfo('Singularity');
       }
+
+      // Generación procedural
+      if (e.code === 'KeyG') {
+        this.generateNewComposition();
+      } else if (e.code === 'KeyR') {
+        this.randomizeParams();
+      } else if (e.code === 'KeyS') {
+        this.showSeedDialog();
+      }
     });
 
-    console.log('Presiona [1-4] universos | [A,R,T,G,O] interacción | [I,D] radio | [U,J] fuerza.');
+    console.log('Presiona [1-4] universos | [G] GENERATE | [R] RANDOMIZE | [S] SEED | [A,R,T,G,O] interacción | [I,D] radio | [U,J] fuerza.');
   }
 
   updateActiveWorldInfo(name) {
     const infoElement = document.getElementById('active-world');
     if (infoElement) {
       infoElement.textContent = `Universe: ${name}`;
+    }
+  }
+
+  generateNewComposition() {
+    const currentWorld = this.worldManager.currentWorld;
+    if (currentWorld && this.worldManager.worlds[currentWorld]) {
+      this.proceduralEngine.randomizeParams(this.worldManager.worlds[currentWorld]);
+    }
+  }
+
+  randomizeParams() {
+    const currentWorld = this.worldManager.currentWorld;
+    if (currentWorld && this.worldManager.worlds[currentWorld]) {
+      this.proceduralEngine.randomizeParams(this.worldManager.worlds[currentWorld]);
+    }
+  }
+
+  showSeedDialog() {
+    const seed = prompt('Introduce una semilla numérica para reproducir una composición:');
+    if (seed && !isNaN(seed)) {
+      this.proceduralEngine.setSeed(parseInt(seed));
+      this.generateNewComposition();
     }
   }
 
