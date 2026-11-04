@@ -2,150 +2,250 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NEXUS — Laboratorio Visual de Universos Generativos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>NEXUS — Generative Universe Lab</title>
+    <meta name="description" content="Laboratorio visual de universos generativos en 3D. Partículas procedurales renderizadas con Three.js." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
     <div id="app">
-      <!-- Canvas 3D protagonista (detrás de la interfaz) -->
+      <!-- Universo 3D (protagonista: ~85-90% del espacio visual) -->
       <canvas id="nexus-canvas"></canvas>
 
-      <!-- Interfaz NEXUS (Laboratorio Espacial / Visualización Científica) -->
-      <div id="nexus-ui" class="nexus-ui-container">
-        <!-- Header -->
-        <header class="nexus-header">
-          <div class="brand-box">
-            <h1 class="nexus-logo">NEXUS</h1>
-            <span class="nexus-subtitle">GENERATIVE UNIVERSE LAB</span>
-          </div>
-          <div class="telemetry-box">
-            <div class="telemetry-item">
-              <span class="t-label">ENGINE:</span>
-              <span class="t-val" id="engine-status">WEBGL ACTIVE</span>
-            </div>
-            <div class="telemetry-item">
-              <span class="t-label">FPS:</span>
-              <span class="t-val" id="fps">60</span>
-            </div>
-            <div class="telemetry-item">
-              <span class="t-label">PARTÍCULAS:</span>
-              <span class="t-val" id="particle-count">0</span>
-            </div>
-            <button class="icon-btn" onclick="document.documentElement.requestFullscreen()" title="Pantalla Completa">⛶</button>
-          </div>
-        </header>
+      <!-- Capa de sombra ambiental / gradientes decorativos -->
+      <div class="nx-ambient" aria-hidden="true">
+        <span class="nx-ambient-glow nx-glow-a"></span>
+        <span class="nx-ambient-glow nx-glow-b"></span>
+        <span class="nx-ambient-vignette"></span>
+        <span class="nx-scanlines"></span>
+      </div>
 
-        <!-- Panel Izquierdo: Selector de universos y acciones -->
-        <aside class="nexus-sidebar left-sidebar">
-          <div class="panel-section">
-            <h3 class="section-title">UNIVERSES</h3>
-            <div class="btn-grid">
-              <button class="nexus-btn active" data-world="cosmos">COSMOS</button>
-              <button class="nexus-btn" data-world="cyberspace">CYBER</button>
-              <button class="nexus-btn" data-world="solaris">SOLARIS</button>
-              <button class="nexus-btn" data-world="singularity">VOID</button>
-            </div>
-          </div>
+      <!-- ================= HEADER ================= -->
+      <header class="nx-header glass">
+        <div class="nx-brand">
+          <span class="nx-logo" aria-hidden="true">
+            <svg viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15.5 12c0-3.6 2.2-6.6 5.4-6.6 2.6 0 4.2 1.7 4.2 3.8 0 2.4-1.7 4.1-4 4.1-1.6 0-2.8-.9-2.8-2.2 0-1.2.9-2.1 2-2.1.9 0 1.6.6 1.6 1.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M32.5 12c0-3.6-2.2-6.6-5.4-6.6-2.6 0-4.2 1.7-4.2 3.8 0 2.4 1.7 4.1 4 4.1 1.6 0 2.8-.9 2.8-2.2 0-1.2-.9-2.1-2-2.1-.9 0-1.6.6-1.6 1.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              <circle cx="24" cy="12" r="1.4" fill="var(--nx-magenta)"/>
+            </svg>
+          </span>
+          <span class="nx-brand-text">
+            <strong>NEXUS</strong>
+            <em>GENERATIVE UNIVERSE LAB</em>
+          </span>
+        </div>
 
-          <div class="panel-section">
-            <h3 class="section-title">PROCEDURAL ENGINE</h3>
-            <div class="btn-stack">
-              <button class="nexus-btn accent" onclick="window.nexusApp.generateNewComposition()">GENERATE</button>
-              <button class="nexus-btn" onclick="window.nexusApp.randomizeParams()">RANDOMIZE</button>
-              <button class="nexus-btn" onclick="window.nexusApp.showSeedDialog()">SEED INPUT</button>
-            </div>
-          </div>
+        <nav class="nx-universe-tabs" aria-label="Selector de universos">
+          <button class="nx-tab active" data-world="cosmos">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5c4.1 0 7.5 3.4 7.5 7.5S16.1 19.5 12 19.5 4.5 16.1 4.5 12 7.9 4.5 12 4.5Z" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M12 8.6c1.9 0 3.4 1.5 3.4 3.4M12 15.4c1.9 0 3.4-1.5 3.4-3.4M8.6 12h6.8" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round"/></svg>
+            <span>Cosmos</span>
+          </button>
+          <button class="nx-tab" data-world="cyberspace">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="currentColor" stroke-width="1.1" fill="none"><path d="M5 6l4 3 4-2 6 3M5 18l4-3 4 2 6-3"/><circle cx="5" cy="6" r="1.6" fill="currentColor" stroke="none"/><circle cx="13" cy="7" r="1.6" fill="currentColor" stroke="none"/><circle cx="19" cy="10" r="1.6" fill="currentColor" stroke="none"/><circle cx="9" cy="15" r="1.6" fill="currentColor" stroke="none"/><circle cx="17" cy="17" r="1.6" fill="currentColor" stroke="none"/></g></svg>
+            <span>Cyber</span>
+          </button>
+          <button class="nx-tab" data-world="solaris">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.4" stroke="currentColor" stroke-width="1.2" fill="none"/><g stroke="currentColor" stroke-width="1.1" stroke-linecap="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></g></svg>
+            <span>Solaris</span>
+          </button>
+          <button class="nx-tab" data-world="singularity">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.6" fill="currentColor"/><ellipse cx="12" cy="12" rx="8.4" ry="3.1" stroke="currentColor" stroke-width="1.3" fill="none" transform="rotate(-20 12 12)"/></svg>
+            <span>Void</span>
+          </button>
+        </nav>
 
-          <div class="panel-section">
-            <h3 class="section-title">SYSTEM</h3>
-            <div class="btn-stack">
-              <button class="nexus-btn" onclick="window.nexusApp.galleryUI.toggleGallery(true)">GALLERY / ARCHIVE</button>
-              <button class="nexus-btn" onclick="window.nexusApp.galleryUI.captureScreenshot()">SCREENSHOT</button>
-              <button class="nexus-btn danger" onclick="window.nexusApp.resetSystem()">RESET SYSTEM</button>
-            </div>
+        <div class="nx-header-right">
+          <div class="nx-mobile-toggles">
+            <button class="nx-icon-btn" id="btn-panel-left" title="Universos" aria-label="Universos">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16M4 12h16M4 17.5h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </button>
+            <button class="nx-icon-btn" id="btn-panel-right" title="Controles" aria-label="Controles">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h9M5 12h6M5 16h11M17 9v5M19.5 11.5L17 8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
           </div>
-        </aside>
-
-        <!-- Panel Derecho: Controles funcionales y telemetría -->
-        <aside class="nexus-sidebar right-sidebar">
-          <div class="panel-section">
-            <h3 class="section-title">INTERACTION MODES</h3>
-            <div class="interaction-modes">
-              <button class="mode-btn active" data-effect="attraction" onclick="window.nexusApp.setEffect('attraction')">ATTRACT</button>
-              <button class="mode-btn" data-effect="repulsion" onclick="window.nexusApp.setEffect('repulsion')">REPULSE</button>
-              <button class="mode-btn" data-effect="turbulence" onclick="window.nexusApp.setEffect('turbulence')">TURBULENCE</button>
-              <button class="mode-btn" data-effect="gravity" onclick="window.nexusApp.setEffect('gravity')">GRAVITY</button>
-              <button class="mode-btn" data-effect="rotation" onclick="window.nexusApp.setEffect('rotation')">ORBIT</button>
-            </div>
+          <div class="nx-status" title="Estado del motor de render">
+            <span class="nx-dot" id="status-dot"></span>
+            <span id="status-text">Online</span>
           </div>
+          <div class="nx-fps" title="Fotogramas por segundo (medición real)">
+            <span class="nx-fps-val" id="fps">0</span>
+            <span class="nx-fps-unit">FPS</span>
+          </div>
+          <button class="nx-icon-btn" id="btn-fullscreen" title="Pantalla completa" aria-label="Pantalla completa">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </header>
 
-          <div class="panel-section">
-            <h3 class="section-title">CONTROLES DEL UNIVERSO</h3>
-            <div class="control-group">
-              <div class="ctrl-row"><span class="ctrl-label">DENSITY</span><span class="ctrl-val" id="val-density">100%</span></div>
-              <input type="range" id="ctrl-density" min="10" max="100" value="100" />
-            </div>
-            <div class="control-group">
-              <div class="ctrl-row"><span class="ctrl-label">MOTION SPEED</span><span class="ctrl-val" id="val-speed">1.00</span></div>
-              <input type="range" id="ctrl-speed" min="0" max="4" step="0.1" value="1" />
-            </div>
-            <div class="control-group">
-              <div class="ctrl-row"><span class="ctrl-label">TURBULENCE</span><span class="ctrl-val" id="val-turbulence">0.00</span></div>
-              <input type="range" id="ctrl-turbulence" min="0" max="2" step="0.1" value="0" />
-            </div>
-            <div class="control-group">
-              <div class="ctrl-row"><span class="ctrl-label">ATTRACTION</span><span class="ctrl-val" id="val-attraction">0.00</span></div>
-              <input type="range" id="ctrl-attraction" min="0" max="2" step="0.1" value="0" />
-            </div>
-            <div class="control-group">
-              <div class="ctrl-row"><span class="ctrl-label">GLOW INTENSITY</span><span class="ctrl-val" id="val-glow">1.00</span></div>
-              <input type="range" id="ctrl-glow" min="0" max="3" step="0.1" value="1" />
-            </div>
-            <div class="control-group">
-              <div class="ctrl-row"><span class="ctrl-label">ROTATION</span><span class="ctrl-val" id="val-rotation">1.00</span></div>
-              <input type="range" id="ctrl-rotation" min="0" max="3" step="0.1" value="1" />
-            </div>
+      <!-- ================= PANEL IZQUIERDO ================= -->
+      <aside class="nx-panel nx-left glass" id="panel-left">
+        <div class="nx-panel-head">
+          <h2>Universos</h2>
+          <button class="nx-collapse" data-target="panel-left" aria-label="Contraer panel">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="nx-panel-body">
+          <div class="nx-world-list">
+            <button class="nx-world active" data-world="cosmos">
+              <span class="nx-world-thumb nx-thumb-cosmos" aria-hidden="true"></span>
+              <span class="nx-world-meta"><strong>Cosmos</strong><em>Galaxia espiral</em></span>
+            </button>
+            <button class="nx-world" data-world="cyberspace">
+              <span class="nx-world-thumb nx-thumb-cyber" aria-hidden="true"></span>
+              <span class="nx-world-meta"><strong>Cyber</strong><em>Red digital</em></span>
+            </button>
+            <button class="nx-world" data-world="solaris">
+              <span class="nx-world-thumb nx-thumb-solaris" aria-hidden="true"></span>
+              <span class="nx-world-meta"><strong>Solaris</strong><em>Energía pura</em></span>
+            </button>
+            <button class="nx-world" data-world="singularity">
+              <span class="nx-world-thumb nx-thumb-void" aria-hidden="true"></span>
+              <span class="nx-world-meta"><strong>Void</strong><em>Agujero negro</em></span>
+            </button>
           </div>
 
-          <div class="panel-section">
-            <h3 class="section-title">TELEMETRY & INFO</h3>
-            <div class="telemetry-readouts">
-              <div class="readout-row">
-                <span class="r-label">ACTIVE UNIVERSE</span>
-                <span class="r-val" id="active-world">Cosmos</span>
-              </div>
-              <div class="readout-row">
-                <span class="r-label">CURRENT SEED</span>
-                <span class="r-val" id="current-seed">12345</span>
-              </div>
-              <div class="readout-row">
-                <span class="r-label">INTERACTION RADIUS</span>
-                <span class="r-val" id="inter-radius">3.0</span>
-              </div>
-              <div class="readout-row">
-                <span class="r-label">RENDER MODE</span>
-                <span class="r-val" id="render-mode">Points</span>
-              </div>
-            </div>
-          </div>
-        </aside>
+          <div class="nx-divider"></div>
 
-        <!-- Footer -->
-        <footer class="nexus-footer">
-          <div class="footer-status">
-            <span class="pulse-dot" id="status-dot"></span>
-            <span id="status-text">SYSTEM ONLINE — WEBGL ACTIVE</span>
+          <button class="nx-btn nx-btn-primary" id="btn-generate">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
+            Generate
+          </button>
+          <button class="nx-btn" id="btn-randomize">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.6" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="13" y="13" width="7" height="7" rx="1.6" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M11 7.5h3.5a2 2 0 0 1 2 2V11" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
+            Randomize
+          </button>
+          <button class="nx-btn" id="btn-reset">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4h-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+            Reset
+          </button>
+        </div>
+      </aside>
+
+      <!-- ================= PANEL DERECHO ================= -->
+      <aside class="nx-panel nx-right glass" id="panel-right">
+        <div class="nx-panel-head">
+          <h2>Controles</h2>
+          <button class="nx-collapse" data-target="panel-right" aria-label="Contraer panel">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="nx-panel-body">
+          <div class="nx-slider">
+            <div class="nx-slider-top"><label for="ctrl-density">Densidad</label><output id="val-density">8500</output></div>
+            <div class="nx-slider-track"><input type="range" id="ctrl-density" min="10" max="100" step="1" value="100" /></div>
           </div>
-          <div class="footer-shortcuts">
-            <span>[1-4] UNIVERSES</span>
-            <span>[G] GENERATE</span>
-            <span>[R] RANDOMIZE</span>
-            <span>[S] SEED</span>
-            <span>[P] GALLERY</span>
-            <span>[X] CAPTURE</span>
+
+          <div class="nx-slider">
+            <div class="nx-slider-top"><label for="ctrl-speed">Velocidad</label><output id="val-speed">1.0</output></div>
+            <div class="nx-slider-track"><input type="range" id="ctrl-speed" min="0" max="4" step="0.1" value="1" /></div>
           </div>
-        </footer>
+
+          <div class="nx-slider">
+            <div class="nx-slider-top"><label for="ctrl-turbulence">Turbulencia</label><output id="val-turbulence">0.0</output></div>
+            <div class="nx-slider-track"><input type="range" id="ctrl-turbulence" min="0" max="2" step="0.1" value="0" /></div>
+          </div>
+
+          <div class="nx-slider">
+            <div class="nx-slider-top"><label for="ctrl-attraction">Atracción</label><output id="val-attraction">0.0</output></div>
+            <div class="nx-slider-track"><input type="range" id="ctrl-attraction" min="0" max="2" step="0.1" value="0" /></div>
+          </div>
+
+          <div class="nx-slider">
+            <div class="nx-slider-top"><label for="ctrl-glow">Brillo</label><output id="val-glow">1.2</output></div>
+            <div class="nx-slider-track"><input type="range" id="ctrl-glow" min="0" max="3" step="0.1" value="1.2" /></div>
+          </div>
+
+          <div class="nx-slider">
+            <div class="nx-slider-top"><label for="ctrl-rotation">Rotación</label><output id="val-rotation">1.0</output></div>
+            <div class="nx-slider-track"><input type="range" id="ctrl-rotation" min="0" max="3" step="0.1" value="1" /></div>
+          </div>
+
+          <div class="nx-divider"></div>
+
+          <div class="nx-section-title">Paleta de colores</div>
+          <div class="nx-palette" id="nx-palette">
+            <button class="nx-swatch active" data-palette="0" style="--sw-a:#00E5FF; --sw-b:#8B5CF6" title="Nebulosa"><span></span></button>
+            <button class="nx-swatch" data-palette="1" style="--sw-a:#38F9A7; --sw-b:#0EA5E9" title="Aurora"><span></span></button>
+            <button class="nx-swatch" data-palette="2" style="--sw-a:#FF7A18; --sw-b:#E044FF" title="Ígnea"><span></span></button>
+            <button class="nx-swatch" data-palette="3" style="--sw-a:#7DD3FC; --sw-b:#E0F2FE" title="Hielo"><span></span></button>
+            <button class="nx-swatch" data-palette="4" style="--sw-a:#C084FC; --sw-b:#F472B6" title="Amatista"><span></span></button>
+            <button class="nx-swatch" data-palette="5" style="--sw-a:#FCD34D; --sw-b:#FB923C" title="Oro"><span></span></button>
+          </div>
+
+          <div class="nx-divider"></div>
+
+          <div class="nx-section-title">Interacción del cursor</div>
+          <div class="nx-modes">
+            <button class="nx-mode mode-btn active" data-effect="attraction">Atraer</button>
+            <button class="nx-mode mode-btn" data-effect="repulsion">Repeler</button>
+            <button class="nx-mode mode-btn" data-effect="turbulence">Turbulencia</button>
+            <button class="nx-mode mode-btn" data-effect="gravity">Gravedad</button>
+            <button class="nx-mode mode-btn" data-effect="rotation">Órbita</button>
+          </div>
+          <p class="nx-hint">Mueve el cursor sobre el universo para perturbarlo. Arrastra para orbitar, rueda para acercar.</p>
+
+          <div class="nx-telemetry">
+            <div class="nx-tel-row"><span>Universo activo</span><strong id="active-world">Cosmos</strong></div>
+            <div class="nx-tel-row"><span>Radio de interacción</span><strong id="inter-radius">3.0</strong></div>
+            <div class="nx-tel-row"><span>Modo de render</span><strong id="render-mode">Points + Shader</strong></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ================= FOOTER ================= -->
+      <footer class="nx-footer glass">
+        <div class="nx-footer-stats">
+          <div class="nx-stat">
+            <span class="nx-stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.5" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/></svg>
+            </span>
+            <span class="nx-stat-meta"><em>Universo Activo</em><strong id="footer-world">Cosmos</strong></span>
+          </div>
+          <div class="nx-stat">
+            <span class="nx-stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><g fill="currentColor"><circle cx="7" cy="8" r="1.5"/><circle cx="13" cy="6" r="1.3"/><circle cx="17" cy="10" r="1.5"/><circle cx="10" cy="13" r="1.4"/><circle cx="15" cy="16" r="1.3"/><circle cx="6" cy="16" r="1.2"/></g></svg>
+            </span>
+            <span class="nx-stat-meta"><em>Partículas</em><strong id="particle-count">0</strong></span>
+          </div>
+          <div class="nx-stat">
+            <span class="nx-stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 3l7 4v6c0 4-3 7-7 8-4-1-7-4-7-8V7l7-4Z" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="12" cy="11" r="2" fill="currentColor"/></svg>
+            </span>
+            <span class="nx-stat-meta"><em>Seed</em><strong id="current-seed">12345</strong></span>
+          </div>
+          <div class="nx-stat nx-stat-status">
+            <span class="nx-dot nx-dot-sm" id="footer-dot"></span>
+            <span class="nx-stat-meta"><em>Estado</em><strong id="footer-status">Activo</strong></span>
+          </div>
+        </div>
+
+        <div class="nx-footer-actions">
+          <button class="nx-btn nx-btn-ghost" id="btn-capture">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5h3l1.3-2h7.4L17 8.5h3v10H4v-10Z" stroke="currentColor" stroke-width="1.4" fill="none"/><circle cx="12" cy="13" r="3.2" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
+            Capturar
+          </button>
+          <button class="nx-btn nx-btn-ghost" id="btn-save">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h9l3 3v13H6V4Z" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M9 4v5h6V4M9 13h6M9 16h6" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>
+            Guardar
+          </button>
+          <button class="nx-btn nx-btn-ghost" id="btn-share">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M8 7.5L12 3.5l4 4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M5 13v6h14v-6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+            Compartir
+          </button>
+        </div>
+      </footer>
+
+      <!-- Aviso de error (se muestra solo si el motor falla) -->
+      <div class="nx-fallback" id="nx-fallback" hidden>
+        <div class="nx-fallback-card glass">
+          <h2>No se pudo iniciar el motor 3D</h2>
+          <p id="nx-fallback-msg">Este navegador no dispone de WebGL o el contexto se ha perdido.</p>
+          <button class="nx-btn nx-btn-primary" onclick="location.reload()">Reintentar</button>
+        </div>
       </div>
     </div>
 

@@ -1,183 +1,156 @@
 import * as THREE from 'three';
 
+/**
+ * INTERACTION CONTROLLER — El cursor interactúa con el universo.
+ *
+ * Cada frame se proyecta el puntero del ratón al espacio 3D y se envía al
+ * universo activo como punto de influencia. Los universos basados en
+ * shaders lo usan directamente en el vertex shader (sin recalcular
+ * buffers, coste ~cero); los basados en CPU reciben la perturbación
+ * nodo por nodo.
+ */
+const MODE_CODES = {
+  attraction: 0,
+  repulsion: 1,
+  turbulence: 2,
+  gravity: 3,
+  orbit: 4
+};
+
 export class InteractionController {
   constructor(camera, renderer, worldManager) {
     this.camera = camera;
     this.renderer = renderer;
     this.worldManager = worldManager;
-    this.mouse = new THREE.Vector2();
+
     this.raycaster = new THREE.Raycaster();
-    this.raycaster.params.Points.threshold = 0.25;
-    this.interactionRadius = 3;
-    this.interactionStrength = 0.05;
-    this.isMouseDown = false;
+    this.mouse = new THREE.Vector2();
+    this.pointerWorld = new THREE.Vector3();
+    this.origin = new THREE.Vector3();
+    this.insideCanvas = false;
+
     this.currentEffect = 'attraction';
+    this.interactionRadius = 5.0;
+    this.interactionStrength = 0.05;
 
-    this.effects = {
-      attraction: this.applyAttraction.bind(this),
-      repulsion: this.applyRepulsion.bind(this),
-      turbulence: this.applyTurbulence.bind(this),
-      gravity: this.applyGravity.bind(this),
-      rotation: this.applyRotation.bind(this)
+    this._onPointerMove = (e) => this._handlePointer(e.clientX, e.clientY);
+    this._onPointerLeave = () => { this.insideCanvas = false; };
+    this._onPointerEnter = () => { this.insideCanvas = true; };
+    this._onTouchMove = (e) => {
+      if (e.touches && e.touches.length) {
+        this.insideCanvas = true;
+        this._handlePointer(e.touches[0].clientX, e.touches[0].clientY);
+      }
     };
+    this._onKeyDown = (e) => this._handleKey(e);
 
-    // Referencias vinculadas para poder eliminar los listeners en destroy()
-    this._onMouseMove = (e) => this.onMouseMove(e);
-    this._onMouseDown = () => { this.isMouseDown = true; };
-    this._onMouseUp = () => { this.isMouseDown = false; };
-    this._onTouchMove = (e) => this.onTouchMove(e);
-    this._onTouchStart = () => { this.isMouseDown = true; };
-    this._onTouchEnd = () => { this.isMouseDown = false; };
-    this._onKeyDown = (e) => this.onKeyDown(e);
-
-    this.initEventListeners();
+    this._bind();
   }
 
-  initEventListeners() {
-    const el = this.renderer.domElement;
-    el.addEventListener('mousemove', this._onMouseMove);
-    el.addEventListener('mousedown', this._onMouseDown);
-    el.addEventListener('mouseup', this._onMouseUp);
-    el.addEventListener('touchmove', this._onTouchMove, { passive: false });
-    el.addEventListener('touchstart', this._onTouchStart);
-    el.addEventListener('touchend', this._onTouchEnd);
+  _bind() {
+    const el = this.renderer && this.renderer.domElement;
+    if (!el) return;
+    el.addEventListener('pointermove', this._onPointerMove);
+    el.addEventListener('pointerenter', this._onPointerEnter);
+    el.addEventListener('pointerleave', this._onPointerLeave);
+    el.addEventListener('touchmove', this._onTouchMove, { passive: true });
     window.addEventListener('keydown', this._onKeyDown);
   }
 
-  onMouseMove(e) {
-    this.updateMousePosition(e.clientX, e.clientY);
-    this.applyInteractionEffect();
-  }
-
-  onTouchMove(e) {
-    if (e.touches.length > 0) {
-      const touch = e.touches[0];
-      this.updateMousePosition(touch.clientX, touch.clientY);
-      this.applyInteractionEffect();
-    }
-  }
-
-  updateMousePosition(clientX, clientY) {
-    const rect = this.renderer.domElement.getBoundingClientRect();
+  _handlePointer(clientX, clientY) {
+    const el = this.renderer.domElement;
+    const rect = el.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    this.insideCanvas = true;
     this.mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
     this.mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
   }
 
-  applyInteractionEffect() {
-    if (!this.worldManager || !this.worldManager.currentWorld) return;
+  _handleKey(e) {
+    const actions = {
+      KeyA: 'attraction',
+      KeyR: 'repulsion',
+      KeyT: 'turbulence',
+      KeyG: 'gravity',
+      KeyO: 'orbit'
+    };
+    if (actions[e.code]) {
+      this.currentEffect = actions[e.code];
+      return;
+    }
+    if (e.code === 'KeyI') this.interactionRadius = Math.min(12, this.interactionRadius + 0.5);
+    else if (e.code === 'KeyD') this.interactionRadius = Math.max(1, this.interactionRadius - 0.5);
+    else if (e.code === 'KeyU') this.interactionStrength = Math.min(0.12, this.interactionStrength + 0.01);
+    else if (e.code === 'KeyJ') this.interactionStrength = Math.max(0.01, this.interactionStrength - 0.01);
+    else return;
 
-    const currentWorld = this.worldManager.worlds[this.worldManager.currentWorld];
+    const el = document.getElementById('inter-radius');
+    if (el) el.textContent = this.interactionRadius.toFixed(1);
+  }
+
+  update() {
+    if (!this.worldManager || !this.camera) return;
+    const world = this.worldManager.getCurrentWorldInstance();
+    if (!world) return;
+
+    if (!this.insideCanvas) {
+      this.worldManager.setPointer(null, false);
+      return;
+    }
+
+    // Proyección del puntero al espacio del universo
     this.raycaster.setFromCamera(this.mouse, this.camera.instance);
+    const distance = Math.max(6, this.camera.instance.position.distanceTo(this.origin));
+    this.raycaster.ray.at(distance, this.pointerWorld);
 
-    let intersects = [];
-    if (currentWorld.mesh) {
-      intersects = this.raycaster.intersectObject(currentWorld.mesh);
-    } else if (currentWorld.nodesMesh) {
-      intersects = this.raycaster.intersectObject(currentWorld.nodesMesh);
+    this.worldManager.setPointer(this.pointerWorld, true);
+    this.worldManager.setPointerConfig({
+      mode: this.currentEffect,
+      radius: this.interactionRadius,
+      strength: 2.4
+    });
+
+    // Perturbación por CPU para universos basados en nodos
+    if (typeof world.setPointer !== 'function') return;
+    this._applyCpuPerturbation(world, 0.033);
+  }
+
+  _applyCpuPerturbation(world, delta) {
+    if (!world.nodes || !world.nodesMesh) return;
+    const p = this.pointerWorld;
+    const r = this.interactionRadius;
+    const mode = MODE_CODES[this.currentEffect] ?? 0;
+    const force = this.interactionStrength;
+
+    for (const node of world.nodes) {
+      const pos = node.position;
+      const dx = pos.x - p.x;
+      const dy = pos.y - p.y;
+      const dz = pos.z - p.z;
+      const d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      if (d > r || d < 0.0001) continue;
+
+      const infl = (1 - d / r) * force * (mode === 1 ? -1 : 1);
+      if (mode === 2) {
+        pos.x += (Math.random() - 0.5) * infl * 6;
+        pos.y += (Math.random() - 0.5) * infl * 6;
+        pos.z += (Math.random() - 0.5) * infl * 6;
+      } else {
+        pos.x += (dx / d) * infl * 3 * delta * 60;
+        pos.y += (dy / d) * infl * 3 * delta * 60;
+        pos.z += (dz / d) * infl * 3 * delta * 60;
+      }
     }
-
-    if (intersects.length > 0) {
-      this.effects[this.currentEffect](intersects[0]);
-    }
-  }
-
-  applyAttraction(intersect) {
-    this._shiftParticle(intersect, 1);
-  }
-
-  applyRepulsion(intersect) {
-    this._shiftParticle(intersect, -1);
-  }
-
-  applyTurbulence(intersect) {
-    const posAttr = intersect.object.geometry.getAttribute('position');
-    const positions = posAttr.array;
-    const index = intersect.index;
-    if (index === undefined) return;
-    const i3 = index * 3;
-    const force = this.interactionStrength * 0.6 * (this.isMouseDown ? 3 : 1);
-    positions[i3] += (Math.random() - 0.5) * force;
-    positions[i3 + 1] += (Math.random() - 0.5) * force;
-    positions[i3 + 2] += (Math.random() - 0.5) * force;
-    posAttr.needsUpdate = true;
-  }
-
-  applyGravity(intersect) {
-    const posAttr = intersect.object.geometry.getAttribute('position');
-    const positions = posAttr.array;
-    const index = intersect.index;
-    if (index === undefined) return;
-    const i3 = index * 3;
-    const x = positions[i3], y = positions[i3 + 1], z = positions[i3 + 2];
-    const force = this.interactionStrength * 0.12 * (this.isMouseDown ? 2 : 1);
-    positions[i3] += -x * force;
-    positions[i3 + 1] += -y * force;
-    positions[i3 + 2] += -z * force;
-    posAttr.needsUpdate = true;
-  }
-
-  applyRotation(intersect) {
-    const posAttr = intersect.object.geometry.getAttribute('position');
-    const positions = posAttr.array;
-    const index = intersect.index;
-    if (index === undefined) return;
-    const i3 = index * 3;
-    const x = positions[i3], y = positions[i3 + 1], z = positions[i3 + 2];
-    const force = this.interactionStrength * (this.isMouseDown ? 2 : 1);
-    const angle = performance.now() * 0.0015;
-    const ca = Math.cos(angle) * force;
-    const sa = Math.sin(angle) * force;
-    const ix = intersect.point.x, iz = intersect.point.z;
-    positions[i3] = ix + (x - ix) * ca - (z - iz) * sa;
-    positions[i3 + 2] = iz + (x - ix) * sa + (z - iz) * ca;
-    positions[i3 + 1] = y;
-    posAttr.needsUpdate = true;
-  }
-
-  _shiftParticle(intersect, direction) {
-    const posAttr = intersect.object.geometry.getAttribute('position');
-    const positions = posAttr.array;
-    const index = intersect.index;
-    if (index === undefined) return;
-    const i3 = index * 3;
-    const x = positions[i3], y = positions[i3 + 1], z = positions[i3 + 2];
-    const force = this.interactionStrength * (this.isMouseDown ? 2 : 1);
-    positions[i3] += (intersect.point.x - x) * force * direction;
-    positions[i3 + 1] += (intersect.point.y - y) * force * direction;
-    positions[i3 + 2] += (intersect.point.z - z) * force * direction;
-    posAttr.needsUpdate = true;
-  }
-
-  onKeyDown(e) {
-    switch (e.code) {
-      case 'KeyA': this.currentEffect = 'attraction'; break;
-      case 'KeyR': this.currentEffect = 'repulsion'; break;
-      case 'KeyT': this.currentEffect = 'turbulence'; break;
-      case 'KeyG': this.currentEffect = 'gravity'; break;
-      case 'KeyO': this.currentEffect = 'rotation'; break;
-      case 'KeyI': this.interactionRadius = Math.min(5, this.interactionRadius + 0.5); break;
-      case 'KeyD': this.interactionRadius = Math.max(1, this.interactionRadius - 0.5); break;
-      case 'KeyU': this.interactionStrength = Math.min(0.1, this.interactionStrength + 0.01); break;
-      case 'KeyJ': this.interactionStrength = Math.max(0.01, this.interactionStrength - 0.01); break;
-    }
-    console.log(`Efecto: ${this.currentEffect}, Radio: ${this.interactionRadius.toFixed(1)}, Fuerza: ${this.interactionStrength.toFixed(2)}`);
   }
 
   destroy() {
     const el = this.renderer && this.renderer.domElement;
     if (el) {
-      el.removeEventListener('mousemove', this._onMouseMove);
-      el.removeEventListener('mousedown', this._onMouseDown);
-      el.removeEventListener('mouseup', this._onMouseUp);
+      el.removeEventListener('pointermove', this._onPointerMove);
+      el.removeEventListener('pointerenter', this._onPointerEnter);
+      el.removeEventListener('pointerleave', this._onPointerLeave);
       el.removeEventListener('touchmove', this._onTouchMove);
-      el.removeEventListener('touchstart', this._onTouchStart);
-      el.removeEventListener('touchend', this._onTouchEnd);
     }
     window.removeEventListener('keydown', this._onKeyDown);
-    this.mouse = null;
-    this.raycaster = null;
-    this.camera = null;
-    this.renderer = null;
-    this.worldManager = null;
   }
 }

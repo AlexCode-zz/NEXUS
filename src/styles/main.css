@@ -2,19 +2,31 @@
 @import url('./responsive.css');
 
 :root {
-  --bg-color: #030305;
-  --panel-bg: rgba(10, 12, 18, 0.85);
-  --panel-bg-strong: rgba(10, 12, 18, 0.92);
-  --border-color: rgba(0, 255, 204, 0.18);
-  --border-color-hover: rgba(0, 255, 204, 0.45);
-  --accent-color: #00ffcc;
-  --accent-color-2: #7b2cbf;
-  --text-main: #e0e0e0;
-  --text-dim: #8888a0;
-  --text-error: #ff4444;
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  --font-mono: 'Courier New', Courier, monospace;
-  --transition-speed: 0.25s;
+  /* Paleta de dirección artística NEXUS */
+  --nx-bg: #03040b;
+  --nx-bg-2: #07152c;
+  --nx-cyan: #00e5ff;
+  --nx-violet: #8b5cf6;
+  --nx-magenta: #e044ff;
+  --nx-white: #e8f1ff;
+  --nx-dim: rgba(232, 241, 255, 0.56);
+  --nx-dim-strong: rgba(232, 241, 255, 0.78);
+
+  /* Superficies */
+  --nx-glass: linear-gradient(158deg, rgba(12, 22, 44, 0.74) 0%, rgba(5, 8, 18, 0.86) 100%);
+  --nx-glass-solid: linear-gradient(158deg, rgba(14, 26, 50, 0.92) 0%, rgba(4, 6, 14, 0.96) 100%);
+  --nx-border: rgba(150, 190, 255, 0.14);
+  --nx-border-strong: rgba(0, 229, 255, 0.38);
+  --nx-shadow: 0 18px 40px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+
+  /* Métrica */
+  --nx-radius: 16px;
+  --nx-radius-sm: 10px;
+  --nx-gap: 14px;
+  --nx-speed: 0.28s;
+  --nx-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --nx-font: 'Inter', 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --nx-font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, 'Courier New', monospace;
 }
 
 * {
@@ -23,14 +35,17 @@
   padding: 0;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background-color: var(--bg-color);
-  color: var(--text-main);
-  font-family: var(--font-sans);
+  background: var(--nx-bg);
+  color: var(--nx-white);
+  font-family: var(--nx-font);
+  font-size: 14px;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 #app {
@@ -40,13 +55,70 @@ html, body {
   overflow: hidden;
 }
 
+/* ---------- Canvas 3D protagonista ---------- */
 #nexus-canvas {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
   display: block;
   z-index: 0;
-  background-color: var(--bg-color);
+  background:
+    radial-gradient(120% 90% at 62% 48%, #0a1c3c 0%, #050a18 42%, #03040b 100%);
+  touch-action: none;
+  cursor: crosshair;
+}
+
+/* ---------- Capa ambiental (gradientes, viñeta, scanlines) ---------- */
+.nx-ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.nx-ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.55;
+}
+
+.nx-glow-a {
+  width: 46vw;
+  height: 46vw;
+  left: -12vw;
+  bottom: -18vw;
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.22) 0%, rgba(0, 229, 255, 0) 68%);
+}
+
+.nx-glow-b {
+  width: 40vw;
+  height: 40vw;
+  right: -10vw;
+  top: -14vw;
+  background: radial-gradient(circle, rgba(224, 68, 255, 0.18) 0%, rgba(224, 68, 255, 0) 70%);
+}
+
+.nx-ambient-vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(115% 85% at 50% 50%, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.55) 100%),
+    linear-gradient(180deg, rgba(3, 4, 11, 0.72) 0%, rgba(3, 4, 11, 0) 18%, rgba(3, 4, 11, 0) 74%, rgba(3, 4, 11, 0.8) 100%);
+}
+
+.nx-scanlines {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.035) 0px,
+    rgba(255, 255, 255, 0.035) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
 }

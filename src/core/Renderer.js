@@ -26,16 +26,14 @@ export class Renderer {
     this.instance.setSize(window.innerWidth, window.innerHeight);
     this.instance.setPixelRatio(pixelRatio);
 
-    // Configuración avanzada según calidad
-    if (this.qualitySettings.qualityLevel === 'high') {
-      this.instance.shadowMap.enabled = true;
-      this.instance.shadowMap.type = THREE.PCFSoftShadowMap;
-      this.instance.toneMapping = THREE.ACESFilmicToneMapping;
-      this.instance.toneMappingExposure = 1.0;
-    } else {
-      this.instance.shadowMap.enabled = false;
-      this.instance.toneMapping = THREE.NoToneMapping;
-    }
+    // Sin mapeo de tonos: los colores neón del additive blending deben
+    // mantener su saturación (ACES los apagaría y daría un look plano).
+    this.instance.toneMapping = THREE.NoToneMapping;
+    this.instance.outputColorSpace = THREE.SRGBColorSpace;
+
+    // Las sombras no aportan en un universo de partículas aditivas y
+    // consumen rendimiento, así que se mantienen desactivadas.
+    this.instance.shadowMap.enabled = false;
   }
 
   getPixelRatio() {

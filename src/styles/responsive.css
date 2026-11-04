@@ -1,94 +1,138 @@
-/* ==========================================================================
-   NEXUS — Adaptación móvil y accesibilidad
-   ========================================================================== */
+/* =====================================================================
+   Adaptación responsive: escritorio ancho, portátil, tablet y móvil.
+   El universo 3D siempre domina el espacio visual.
+   ===================================================================== */
 
-@media (max-width: 1024px) {
-  #nexus-ui {
-    grid-template-columns: 220px 1fr 220px;
-    padding: 10px;
+/* --- Portátiles pequeñas / tablets grandes --- */
+@media (max-width: 1280px) {
+  .nx-panel { width: 274px; }
+  .nx-right { width: 290px; }
+  .nx-universe-tabs { gap: 2px; }
+  .nx-tab { padding: 7px 12px; font-size: 11.5px; }
+  .nx-footer-stats { gap: 18px; }
+}
+
+/* --- Tablet --- */
+@media (max-width: 1080px) {
+  .nx-header { gap: 12px; padding: 0 14px; }
+  .nx-brand-text em { display: none; }
+  .nx-tab span { display: none; }
+  .nx-tab { padding: 8px 11px; }
+  .nx-tab svg { width: 19px; height: 19px; }
+  .nx-panel { top: 88px; width: 250px; max-height: calc(100vh - 240px); }
+  .nx-right { width: 264px; }
+  .nx-footer { padding: 11px 14px; gap: 12px; }
+  .nx-footer-stats { gap: 14px; }
+  .nx-stat-icon { width: 28px; height: 28px; }
+}
+
+/* --- Móvil (todo apilado, paneles plegables) --- */
+@media (max-width: 860px) {
+  :root { --nx-gap: 10px; }
+
+  .nx-header {
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    height: 52px;
+    padding: 0 12px;
     gap: 10px;
-  }
-  .nexus-logo { font-size: 1.3rem; }
-  .interaction-modes { grid-template-columns: repeat(3, 1fr); }
-}
-
-@media (max-width: 768px) {
-  #nexus-ui {
-    grid-template-areas:
-      "header"
-      "left"
-      "right"
-      "footer";
-    grid-template-columns: 1fr;
-    grid-template-rows: 52px 1fr 1fr 44px;
-    padding: 8px;
-    gap: 8px;
+    border-radius: 14px;
   }
 
-  .nexus-header { padding: 0 10px; gap: 10px; }
-  .telemetry-box { gap: 12px; font-size: 0.7rem; }
-  .t-val { font-size: 0.72rem; }
+  .nx-brand-text strong { font-size: 16px; }
+  .nx-logo { width: 38px; height: 22px; }
 
-  .nexus-sidebar {
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-    padding: 10px;
+  .nx-universe-tabs {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    justify-content: flex-start;
+    overflow-x: auto;
+    border-radius: 14px;
+    scrollbar-width: none;
   }
 
-  .left-sidebar,
-  .right-sidebar {
-    overflow-y: auto;
-    max-height: 40vh;
+  .nx-universe-tabs::-webkit-scrollbar { display: none; }
+  .nx-tab span { display: inline; }
+  .nx-tab { flex: none; }
+  .nx-status { display: none; }
+  .nx-fps { padding: 5px 9px; }
+  .nx-mobile-toggles { display: flex; }
+
+  .nx-panel {
+    top: auto;
+    bottom: 104px;
+    width: calc(100% - 24px);
+    left: 12px;
+    right: 12px;
+    max-height: 44vh;
   }
 
-  .btn-grid { grid-template-columns: 1fr 1fr; gap: 7px; }
-  .interaction-modes { grid-template-columns: repeat(5, 1fr); }
-  .mode-btn { font-size: 0.62rem; padding: 5px 4px; }
+  .nx-right { width: calc(100% - 24px); }
 
-  .nexus-logo { font-size: 1.2rem; }
-  .nexus-subtitle { font-size: 0.58rem; }
+  /* Un solo panel visible a la vez en móvil */
+  .nx-panel { display: none; }
+  .nx-panel.panel-open { display: flex; }
+
+  .nx-panel-body { max-height: 34vh; padding: 12px 13px 14px; gap: 8px; }
+
+  .nx-footer {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    min-height: 60px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 11px 13px;
+  }
+
+  .nx-footer-stats { justify-content: space-between; gap: 8px; }
+  .nx-stat-icon { display: none; }
+  .nx-stat-meta em { font-size: 8.5px; letter-spacing: 0.1em; }
+  .nx-stat-meta strong { font-size: 12px; }
+
+  .nx-footer-actions { justify-content: space-between; }
+  .nx-btn-ghost { flex: 1; padding: 9px 8px; font-size: 9.5px; letter-spacing: 0.08em; }
+
+  .nx-ambient-glow { filter: blur(60px); opacity: 0.4; }
 }
 
-@media (max-width: 480px) {
-  #nexus-ui { grid-template-rows: 48px 1fr 1fr 40px; padding: 6px; gap: 6px; }
-  .nexus-header { padding: 0 8px; }
-  .brand-box { gap: 1px; }
-  .nexus-logo { font-size: 1.05rem; letter-spacing: 0.2em; }
-  .telemetry-box { gap: 8px; }
-  .t-label { font-size: 0.52rem; }
-  .t-val { font-size: 0.66rem; }
-  .nexus-sidebar { padding: 8px; gap: 8px; }
-  .section-title { font-size: 0.62rem; }
-  .nexus-btn { font-size: 0.7rem; padding: 7px 9px; }
-  .interaction-modes { grid-template-columns: repeat(5, 1fr); gap: 6px; }
-  .mode-btn { font-size: 0.58rem; padding: 5px 3px; }
-  .ctrl-label { font-size: 0.62rem; }
-  .ctrl-val { font-size: 0.64rem; min-width: 36px; }
-  input[type="range"]::-webkit-slider-thumb { width: 12px; height: 12px; }
-  .nexus-footer { padding: 0 8px; font-size: 0.62rem; }
-  .footer-shortcuts { gap: 10px; }
+/* --- Móviles pequeños --- */
+@media (max-width: 420px) {
+  .nx-fps-unit { display: none; }
+  .nx-brand-text strong { letter-spacing: 0.1em; }
+  .nx-world-thumb { width: 36px; height: 36px; }
+  .nx-stat:nth-child(3) { display: none; }
 }
 
-/* Accesibilidad */
-:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 2px;
+/* --- Pantallas muy anchas: aprovechar el espacio --- */
+@media (min-width: 1700px) {
+  .nx-panel { width: 330px; }
+  .nx-right { width: 350px; }
+  .nx-header { height: 64px; }
+  html, body { font-size: 15px; }
 }
 
-button:focus, button:hover {
-  background: rgba(0, 255, 204, 0.1);
-  color: var(--accent-color);
-}
-
-/* Controles táctiles: área mínima de toque */
-@media (pointer: coarse) {
-  button { min-height: 44px; font-size: 0.85rem; }
-  .control-group { margin-bottom: 10px; }
-}
-
-/* Preferencia de movimiento reducido: desactivar animaciones decorativas */
+/* --- Movimiento reducido --- */
 @media (prefers-reduced-motion: reduce) {
-  .pulse-dot { animation: none; opacity: 0.9; }
-  *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .nx-scanlines { display: none; }
+}
+
+/* --- Modo paisaje en móvil (altura muy limitada) --- */
+@media (max-height: 520px) and (orientation: landscape) {
+  .nx-panel { top: 78px; bottom: 92px; max-height: calc(100vh - 178px); }
+  .nx-panel-body { max-height: calc(100vh - 200px); }
+  .nx-footer { min-height: 54px; }
+  .nx-footer-stats .nx-stat:nth-child(3) { display: flex; }
 }
