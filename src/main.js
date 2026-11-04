@@ -11,6 +11,7 @@ import { OrbitControls } from './core/OrbitControls.js';
 import { WorldManager } from './worlds/WorldManager.js';
 import { InteractionController } from './controls/InteractionController.js';
 import { ProceduralEngine } from './utils/ProceduralEngine.js';
+import { GalleryUI } from './utils/GalleryUI.js';
 
 class NexusApp {
   constructor() {
@@ -47,6 +48,9 @@ class NexusApp {
 
       // Inicializar Motor Procedural
       this.proceduralEngine = new ProceduralEngine();
+
+      // Inicializar UI de Galería
+      this.galleryUI = new GalleryUI(this);
 
       // Configurar eventos de usuario
       this.setupControls();
@@ -128,9 +132,16 @@ class NexusApp {
       } else if (e.code === 'KeyS') {
         this.showSeedDialog();
       }
+
+      // Galería y capturas
+      if (e.code === 'KeyP') {
+        this.galleryUI.toggleGallery(true);
+      } else if (e.code === 'KeyX') {
+        this.galleryUI.captureScreenshot();
+      }
     });
 
-    console.log('Presiona [1-4] universos | [G] GENERATE | [R] RANDOMIZE | [S] SEED | [A,R,T,G,O] interacción | [I,D] radio | [U,J] fuerza.');
+    console.log('Presiona [1-4] universos | [G] GENERATE | [R] RANDOMIZE | [S] SEED | [P] GALLERY | [X] SCREENSHOT | [A,R,T,G,O] interacción | [I,D] radio | [U,J] fuerza.');
   }
 
   updateActiveWorldInfo(name) {
