@@ -11,21 +11,30 @@
       <!-- Canvas 3D -->
       <canvas id="nexus-canvas"></canvas>
 
-      <!-- Interfaz Mínima / HUD -->
-      <div id="nexus-hud">
-        <header class="hud-header">
-          <h1 class="nexus-logo">NEXUS</h1>
-          <p class="hud-subtitle">Laboratorio de Universos Generativos</p>
+      <!-- Interfaz NEXUS Completa -->
+      <div id="nexus-ui">
+        <header class="ui-header">
+          <div class="logo">NEXUS_LAB</div>
+          <div class="fps-counter" id="fps">FPS: 60</div>
         </header>
 
-        <div class="hud-status">
-          <span class="status-dot"></span>
-          <span class="status-text">Sistema Inicializado</span>
-        </div>
+        <aside class="ui-left">
+          <div class="control-group">
+            <div class="label">Universes</div>
+            <button onclick="window.nexusApp.worldManager.activateWorld('cosmos')">COSMOS</button>
+            <button onclick="window.nexusApp.worldManager.activateWorld('cyberspace')">CYBER</button>
+            <button onclick="window.nexusApp.worldManager.activateWorld('solaris')">SOLARIS</button>
+            <button onclick="window.nexusApp.worldManager.activateWorld('singularity')">VOID</button>
+          </div>
+          <div class="control-group">
+            <div class="label">Actions</div>
+            <button onclick="location.reload()">RESET</button>
+          </div>
+        </aside>
 
-        <footer class="hud-footer">
-          <span class="engine-info">NEXUS Engine | Presiona [1-4] para cambiar de universo</span>
-        </footer>
+        <div class="ui-right">
+          <div class="info-panel" id="active-world">Universe: Cosmos</div>
+        </div>
       </div>
     </div>
 

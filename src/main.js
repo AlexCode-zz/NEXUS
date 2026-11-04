@@ -24,8 +24,11 @@ class NexusApp {
     this.init();
   }
 
-  init() {
+  async init() {
     try {
+      // Cargar interfaz si existe
+      await this.loadInterface();
+
       // Inicializar componentes core 3D
       this.scene = new Scene();
       this.camera = new Camera();
@@ -44,13 +47,28 @@ class NexusApp {
       // Configurar eventos de usuario
       this.setupControls();
 
-      // Bucle de animación
+      // Bucle de animación con FPS Counter
+      let lastTime = performance.now();
+      let frames = 0;
+
       this.animationLoop = new AnimationLoop((delta, elapsedTime) => {
         this.camera.update();
         if (this.worldManager) {
           this.worldManager.update(delta, elapsedTime);
         }
         this.renderer.render(this.scene, this.camera);
+
+        // Actualizar FPS
+        frames++;
+        const now = performance.now();
+        if (now >= lastTime + 1000) {
+          const fpsElement = document.getElementById('fps');
+          if (fpsElement) {
+            fpsElement.textContent = `FPS: ${frames}`;
+          }
+          frames = 0;
+          lastTime = now;
+        }
       });
 
       // Manejar redimensionamiento
@@ -66,21 +84,47 @@ class NexusApp {
     }
   }
 
+  async loadInterface() {
+    try {
+      const response = await fetch('/interface.html');
+      if (response.ok) {
+        const interfaceHTML = await response.text();
+        const appContainer = document.getElementById('app');
+        if (appContainer) {
+          appContainer.insertAdjacentHTML('beforeend', interfaceHTML);
+        }
+      }
+    } catch (e) {
+      console.warn('No se pudo cargar la interfaz HTML externa:', e);
+    }
+  }
+
   setupControls() {
     // Teclas 1-4 para cambiar entre universos
     window.addEventListener('keydown', (e) => {
       if (e.code === 'Digit1') {
         this.worldManager.activateWorld('cosmos');
+        this.updateActiveWorldInfo('Cosmos');
       } else if (e.code === 'Digit2') {
         this.worldManager.activateWorld('cyberspace');
+        this.updateActiveWorldInfo('Cyberspace');
       } else if (e.code === 'Digit3') {
         this.worldManager.activateWorld('solaris');
+        this.updateActiveWorldInfo('Solaris');
       } else if (e.code === 'Digit4') {
         this.worldManager.activateWorld('singularity');
+        this.updateActiveWorldInfo('Singularity');
       }
     });
 
     console.log('Presiona [1-4] universos | [A,R,T,G,O] interacción | [I,D] radio | [U,J] fuerza.');
+  }
+
+  updateActiveWorldInfo(name) {
+    const infoElement = document.getElementById('active-world');
+    if (infoElement) {
+      infoElement.textContent = `Universe: ${name}`;
+    }
   }
 
   onResize() {
