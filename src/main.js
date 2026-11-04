@@ -8,7 +8,7 @@ import { Camera } from './core/Camera.js';
 import { Renderer } from './core/Renderer.js';
 import { AnimationLoop } from './core/AnimationLoop.js';
 import { OrbitControls } from './core/OrbitControls.js';
-import { ParticleSystem } from './systems/ParticleSystem.js';
+import { WorldManager } from './worlds/WorldManager.js';
 
 class NexusApp {
   constructor() {
@@ -33,17 +33,18 @@ class NexusApp {
       // Configurar controles de cámara
       this.camera.controls = new OrbitControls(this.camera, this.canvas);
 
-      // Inicializar Sistema de Partículas (5,000 partículas)
-      this.particleSystem = new ParticleSystem(this.scene, 5000);
+      // Inicializar Gestor de Universos
+      this.worldManager = new WorldManager(this.scene);
+      this.worldManager.activateWorld('cosmos');
 
-      // Configurar eventos de usuario para regeneración
+      // Configurar eventos de usuario
       this.setupControls();
 
       // Bucle de animación
       this.animationLoop = new AnimationLoop((delta, elapsedTime) => {
         this.camera.update();
-        if (this.particleSystem) {
-          this.particleSystem.update(delta, elapsedTime);
+        if (this.worldManager) {
+          this.worldManager.update(delta, elapsedTime);
         }
         this.renderer.render(this.scene, this.camera);
       });
@@ -62,18 +63,21 @@ class NexusApp {
   }
 
   setupControls() {
-    // Tecla Espacio para regenerar distribución de partículas
+    // Teclas 1-4 para cambiar entre universos
     window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space') {
-        e.preventDefault();
-        if (this.particleSystem) {
-          this.particleSystem.regenerate();
-        }
+      if (e.code === 'Digit1') {
+        this.worldManager.activateWorld('cosmos');
+      } else if (e.code === 'Digit2') {
+        this.worldManager.activateWorld('cyberspace');
+      } else if (e.code === 'Digit3') {
+        this.worldManager.activateWorld('solaris');
+      } else if (e.code === 'Digit4') {
+        this.worldManager.activateWorld('singularity');
       }
     });
 
-    // Añadir instruccion en la consola o HUD si se desea
-    console.log('Presiona [ESPACIO] para cambiar la distribución del universo de partículas.');
+    // Añadir instrucciones en la consola
+    console.log('Presiona [1-4] para cambiar entre universos.');
   }
 
   onResize() {
@@ -83,8 +87,8 @@ class NexusApp {
 
   handleInitError(error) {
     console.error('Fallo en la inicialización del motor 3D');
-    if (this.particleSystem) {
-      this.particleSystem.destroy();
+    if (this.worldManager) {
+      this.worldManager.destroy();
     }
     if (this.renderer) {
       this.renderer.destroy();
@@ -104,7 +108,7 @@ class NexusApp {
     window.removeEventListener('resize', this.onResize);
     window.nexusApp = null;
 
-    this.particleSystem?.destroy();
+    this.worldManager?.destroy();
     this.animationLoop?.destroy();
     this.renderer?.destroy();
     this.camera?.destroy();
