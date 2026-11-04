@@ -9,6 +9,7 @@ import { Renderer } from './core/Renderer.js';
 import { AnimationLoop } from './core/AnimationLoop.js';
 import { OrbitControls } from './core/OrbitControls.js';
 import { WorldManager } from './worlds/WorldManager.js';
+import { InteractionController } from './controls/InteractionController.js';
 
 class NexusApp {
   constructor() {
@@ -36,6 +37,9 @@ class NexusApp {
       // Inicializar Gestor de Universos
       this.worldManager = new WorldManager(this.scene);
       this.worldManager.activateWorld('cosmos');
+
+      // Inicializar Controlador de Interacción
+      this.interactionController = new InteractionController(this.camera, this.renderer, this.worldManager);
 
       // Configurar eventos de usuario
       this.setupControls();
@@ -76,8 +80,7 @@ class NexusApp {
       }
     });
 
-    // Añadir instrucciones en la consola
-    console.log('Presiona [1-4] para cambiar entre universos.');
+    console.log('Presiona [1-4] universos | [A,R,T,G,O] interacción | [I,D] radio | [U,J] fuerza.');
   }
 
   onResize() {
@@ -87,6 +90,9 @@ class NexusApp {
 
   handleInitError(error) {
     console.error('Fallo en la inicialización del motor 3D');
+    if (this.interactionController) {
+      this.interactionController.destroy();
+    }
     if (this.worldManager) {
       this.worldManager.destroy();
     }
@@ -108,6 +114,7 @@ class NexusApp {
     window.removeEventListener('resize', this.onResize);
     window.nexusApp = null;
 
+    this.interactionController?.destroy();
     this.worldManager?.destroy();
     this.animationLoop?.destroy();
     this.renderer?.destroy();
