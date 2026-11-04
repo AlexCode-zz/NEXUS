@@ -8,6 +8,7 @@ import { Camera } from './core/Camera.js';
 import { Renderer } from './core/Renderer.js';
 import { AnimationLoop } from './core/AnimationLoop.js';
 import { OrbitControls } from './core/OrbitControls.js';
+import { ParticleSystem } from './systems/ParticleSystem.js';
 
 class NexusApp {
   constructor() {
@@ -32,12 +33,18 @@ class NexusApp {
       // Configurar controles de cámara
       this.camera.controls = new OrbitControls(this.camera, this.canvas);
 
-      // Crear esfera temporal para visualización
-      this.createTestSphere();
+      // Inicializar Sistema de Partículas (5,000 partículas)
+      this.particleSystem = new ParticleSystem(this.scene, 5000);
+
+      // Configurar eventos de usuario para regeneración
+      this.setupControls();
 
       // Bucle de animación
       this.animationLoop = new AnimationLoop((delta, elapsedTime) => {
         this.camera.update();
+        if (this.particleSystem) {
+          this.particleSystem.update(delta, elapsedTime);
+        }
         this.renderer.render(this.scene, this.camera);
       });
 
@@ -54,18 +61,19 @@ class NexusApp {
     }
   }
 
-  createTestSphere() {
-    const geometry = new THREE.SphereGeometry(1, 32, 32);
-    const material = new THREE.MeshBasicMaterial({
-      color: 0x00ffcc,
-      wireframe: true
+  setupControls() {
+    // Tecla Espacio para regenerar distribución de partículas
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        if (this.particleSystem) {
+          this.particleSystem.regenerate();
+        }
+      }
     });
 
-    this.testSphere = new THREE.Mesh(geometry, material);
-    this.scene.add(this.testSphere);
-
-    // Rotación suave para verificación
-    this.testSphere.userData = { rotationSpeed: 0.005 };
+    // Añadir instruccion en la consola o HUD si se desea
+    console.log('Presiona [ESPACIO] para cambiar la distribución del universo de partículas.');
   }
 
   onResize() {
@@ -75,6 +83,9 @@ class NexusApp {
 
   handleInitError(error) {
     console.error('Fallo en la inicialización del motor 3D');
+    if (this.particleSystem) {
+      this.particleSystem.destroy();
+    }
     if (this.renderer) {
       this.renderer.destroy();
     }
@@ -93,6 +104,7 @@ class NexusApp {
     window.removeEventListener('resize', this.onResize);
     window.nexusApp = null;
 
+    this.particleSystem?.destroy();
     this.animationLoop?.destroy();
     this.renderer?.destroy();
     this.camera?.destroy();
