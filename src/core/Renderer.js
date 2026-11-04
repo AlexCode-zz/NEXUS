@@ -20,6 +20,9 @@ export class Renderer {
 
     this.instance = new THREE.WebGLRenderer(rendererConfig);
 
+    // Exponer el DOM element para los controladores de interacción
+    this.domElement = this.instance.domElement;
+
     this.instance.setSize(window.innerWidth, window.innerHeight);
     this.instance.setPixelRatio(pixelRatio);
 
