@@ -4,7 +4,7 @@ NEXUS es una aplicación web avanzada de visualización y experimentación 3D im
 
 ---
 
-## 🌌 Universos
+## Universos
 
 | Universo | Descripción |
 |----------|-------------|
@@ -16,37 +16,37 @@ NEXUS es una aplicación web avanzada de visualización y experimentación 3D im
 
 ### Cosmos
 
-<video controls src="public/assets/cosmos-galaxy.mp4" width="100%" max-width="640"></video>
+<video controls src="https://github.com/AlexCode-zz/NEXUS/raw/main/public/assets/cosmos-galaxy.mp4" width="100%" max-width="640"></video>
 
 ### Cyberspace
 
-<video controls src="public/assets/cyberspace-galaxy.mp4" width="100%" max-width="640"></video>
+<video controls src="https://github.com/AlexCode-zz/NEXUS/raw/main/public/assets/cyberspace-galaxy.mp4" width="100%" max-width="640"></video>
 
 ### Solaris
 
-<video controls src="public/assets/solaris-galaxy.mp4" width="100%" max-width="640"></video>
+<video controls src="https://github.com/AlexCode-zz/NEXUS/raw/main/public/assets/solaris-galaxy.mp4" width="100%" max-width="640"></video>
 
 </div>
 
 ---
 
-## 🛠️ Tecnologías
+## Tecnologias
 
 - **Vite** — Entorno de desarrollo rápido y empaquetador moderno.
-- **Three.js** — Motor gráfico 3D basado en WebGL.
+- **Three.js** — Motor grafico 3D basado en WebGL.
 - **CSS Moderno** — Estilos adaptativos, Grid/Flexbox y variables CSS.
 - **JavaScript (ES Modules)** — Arquitectura modular limpia y orientada a objetos.
 
 ---
 
-## 📋 Requisitos
+## Requisitos
 
 - Node.js (v18 o superior recomendado)
 - npm (v9 o superior)
 
 ---
 
-## 📦 Instalación
+## Instalacion
 
 ```bash
 # Clonar el repositorio
@@ -59,22 +59,22 @@ npm install
 
 ---
 
-## ⚙️ Comandos de Desarrollo y Producción
+## Comandos de Desarrollo y Produccion
 
 ```bash
 # Iniciar servidor de desarrollo local
 npm run dev
 
-# Compilar para producción (genera la carpeta /dist)
+# Compilar para produccion (genera la carpeta /dist)
 npm run build
 
-# Previsualizar el build de producción
+# Previsualizar el build de produccion
 npm run preview
 ```
 
 ---
 
-## 📂 Estructura de Carpetas
+## Estructura de Carpetas
 
 ```text
 NEXUS/
@@ -85,9 +85,9 @@ NEXUS/
 ├── src/
 │   ├── core/         # Motor base 3D (Scene, Camera, Renderer, AnimationLoop, OrbitControls)
 │   ├── worlds/       # Universos (Cosmos, Cyberspace, Solaris, Singularity, WorldManager)
-│   ├── systems/      # Sistemas de partículas, materiales y shaders
-│   ├── controls/     # Controlador de interacción física
-│   ├── utils/        # Motor procedural, SeededRandom, galería y screenshots
+│   ├── systems/      # Sistemas de particulas, materiales y shaders
+│   ├── controls/     # Controlador de interaccion fisica
+│   ├── utils/        # Motor procedural, SeededRandom, galeria y screenshots
 │   ├── styles/       # Hojas de estilo (main, interface, responsive)
 │   └── main.js       # Punto de entrada principal
 ├── index.html
@@ -99,6 +99,6 @@ NEXUS/
 
 ---
 
-## 📄 Licencia
+## Licencia
 
 Este proyecto está bajo la Licencia MIT.
