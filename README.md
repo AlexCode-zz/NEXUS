@@ -6,27 +6,11 @@ NEXUS es una aplicación web avanzada de visualización y experimentación 3D im
 
 ## Universos
 
-| Universo | Descripción |
-|----------|-------------|
-| **Cosmos** | Galaxia espiral con brazos luminosos y rotación orbital. |
-| **Cyberspace** | Red neuronal digital con nodos y conexiones dinámicas. |
-| **Solaris** | Océano de energía con ondas fluidas y tonalidades doradas. |
-
-<div align="center">
-
-### Cosmos
-
-<video controls src="https://github.com/AlexCode-zz/NEXUS/raw/main/public/assets/cosmos-galaxy.mp4" width="100%" max-width="640"></video>
-
-### Cyberspace
-
-<video controls src="https://github.com/AlexCode-zz/NEXUS/raw/main/public/assets/cyberspace-galaxy.mp4" width="100%" max-width="640"></video>
-
-### Solaris
-
-<video controls src="https://github.com/AlexCode-zz/NEXUS/raw/main/public/assets/solaris-galaxy.mp4" width="100%" max-width="640"></video>
-
-</div>
+| Universo | Descripción | Video |
+|----------|-------------|-------|
+| **Cosmos** | Galaxia espiral con brazos luminosos y rotación orbital. | [Ver video](https://github.com/AlexCode-zz/NEXUS/raw/main/public/assets/cosmos-galaxy.mp4) |
+| **Cyberspace** | Red neuronal digital con nodos y conexiones dinámicas. | [Ver video](https://github.com/AlexCode-zz/NEXUS/raw/main/public/assets/cyberspace-galaxy.mp4) |
+| **Solaris** | Océano de energía con ondas fluidas y tonalidades doradas. | [Ver video](https://github.com/AlexCode-zz/NEXUS/raw/main/public/assets/solaris-galaxy.mp4) |
 
 ---
 
