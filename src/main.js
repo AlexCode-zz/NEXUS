@@ -24,7 +24,7 @@ const DEFAULT_SEED = 12345;
 const WORLD_META = {
   cosmos: {
     display: 'Cosmos',
-    pose: { radius: 48, phi: 1.02, theta: 0.42 },
+    pose: { radius: 36, phi: 1.0, theta: 0.42 },
     limits: [16, 150],
     defaults: { density: 100, speed: 1.0, turbulence: 0.0, attraction: 0.0, glow: 1.2, rotation: 1.0 }
   },
@@ -516,6 +516,7 @@ class NexusApp {
   _syncControlsToWorld(worldName) {
     const meta = WORLD_META[worldName] || WORLD_META.cosmos;
     const d = meta.defaults;
+    const world = this.worldManager && this.worldManager.getCurrentWorldInstance();
     const set = (id, value) => {
       const el = document.getElementById(id);
       if (!el) return;
@@ -529,6 +530,13 @@ class NexusApp {
     set('ctrl-attraction', d.attraction);
     set('ctrl-glow', d.glow);
     set('ctrl-rotation', d.rotation);
+
+    // Aplicar los valores por defecto al universo: si no, el slider
+    // mostraría una densidad distinta de la realmente construida.
+    if (world) {
+      world.setParams(d);
+      this._setDensity(d.density / 100);
+    }
 
     this._markActiveWorld(worldName);
     this._updateParticleCountDisplay();

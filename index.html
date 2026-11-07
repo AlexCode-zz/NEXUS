@@ -249,6 +249,47 @@
       </div>
     </div>
 
+    <script>
+      (function () {
+        var send = (type, msg) => fetch('http://127.0.0.1:9999/report', {
+          method: 'POST', headers: {'Content-Type': 'text/plain' }, body: type + ': ' + msg
+        }).catch(() => {});
+        console.error = (...a) => send('console.error', a.map(x => String(x)).join(' '));
+        window.addEventListener('error', e => send('window.error', e.message));
+
+        // Programa de cambios: cosmos -> cyber -> solaris -> void
+        var schedule = [
+          { t: 12000, world: 'cosmos' },
+          { t: 20000, world: 'cyberspace' },
+          { t: 28000, world: 'solaris' },
+          { t: 36000, world: 'singularity' }
+        ];
+        schedule.forEach(function (s) {
+          setTimeout(function () {
+            var btn = document.querySelector('[data-world="' + s.world + '"]');
+            if (btn) { btn.click(); send('switched', s.world); }
+            else send('no-button', s.world);
+          }, s.t);
+        });
+
+        function diag() {
+          try {
+            var app = window.nexusApp;
+            var w = app && app.worldManager && app.worldManager.getCurrentWorldInstance();
+            send('diag', JSON.stringify({
+              world: app && app.worldManager && app.worldManager.currentWorld,
+              objects: w && w.group ? w.group.children.length : null,
+              particles: app && app.worldManager && app.worldManager.getParticleCount(),
+              fps: document.getElementById('fps') && document.getElementById('fps').textContent,
+              ui: document.getElementById('particle-count') && document.getElementById('particle-count').textContent,
+              render: app && app.renderer && app.renderer.instance.info.render
+            }));
+          } catch (e) { send('diag.err', String(e)); }
+        }
+        [12000, 20000, 28000, 36000, 44000].forEach(function (t) { setTimeout(diag, t); });
+        setTimeout(function () { send('done', 'all'); }, 46000);
+      })();
+    </script>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

@@ -90,7 +90,9 @@ export class Cosmos {
     this.count = total + asteroidCount;
 
     const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-    const baseSize = (q.particleSize || 1.0) * 0.42;
+    // Tamaño de partícula pequeño: con blending aditivo, partículas
+    // grandes se acumulan y la galaxia pierde definición.
+    const baseSize = (q.particleSize || 1.0) * 0.22;
 
     this.group = new THREE.Group();
 
@@ -106,7 +108,7 @@ export class Cosmos {
 
     const R = this.params.radius;
     const arms = this.params.arms;
-    const twist = 2.5; // factor de enrollado del espiral
+    const twist = 2.4; // factor de enrollado del espiral
 
     const cTmp = new THREE.Color();
 
@@ -120,18 +122,24 @@ export class Cosmos {
       const arm = i % arms;
       const armPhase = (arm / arms) * Math.PI * 2;
       const spiral = Math.log(1 + r * 0.55) * twist;
-      const scatter = (rng.random() + rng.random() + rng.random() - 1.5) * (0.42 + r * 0.055);
+
+      // Dispersión angular ESTRECHA: si es ancha los brazos se difuminan
+      // y la galaxia parece un manchón. Media campana de Gauss (±0.75).
+      const gauss = (rng.random() + rng.random() + rng.random() - 1.5) * 0.5;
+      const scatter = gauss * (0.07 + r * 0.0085);
 
       const angle = armPhase + spiral + scatter;
+
+      // Grosor del disco: abultado en el centro, fino en el borde
       const thickness = (1.5 - (r / R) * 1.15) * (0.35 + rng.random() * 0.65);
-      const y = scatter * thickness * 0.55;
+      const y = gauss * thickness * 0.5;
 
       starPos[i3] = Math.cos(angle) * r;
       starPos[i3 + 1] = y;
       starPos[i3 + 2] = Math.sin(angle) * r;
 
       starAngle[i] = angle;
-      starRadius[i] = r + scatter * 0.32;
+      starRadius[i] = r + (rng.random() - 0.5) * (0.3 + r * 0.035);
 
       const t = r / R;
       const rgb = paletteGradient(palette, t);
@@ -141,7 +149,7 @@ export class Cosmos {
       starCol[i3 + 2] = rgb[2] * b;
 
       // Partículas más grandes y brillantes cerca del núcleo
-      starScale[i] = (1.0 - t) * 1.7 + Math.pow(rng.random(), 2.2) * 1.35 + 0.32;
+      starScale[i] = (1.0 - t) * 1.5 + Math.pow(rng.random(), 2.2) * 1.2 + 0.28;
       starRandom[i] = rng.random();
     }
 
@@ -228,8 +236,8 @@ export class Cosmos {
           float soft = pow(core, 3.0);
           float atten = 1.0 / (1.0 + vDist * 0.011);
 
-          vec3 col = vColor * (0.34 + soft * 1.65) * uGlow * atten;
-          float alpha = core * vAlpha * 0.92;
+          vec3 col = vColor * (0.42 + soft * 1.30) * uGlow * atten;
+          float alpha = core * vAlpha * 0.72;
 
           gl_FragColor = vec4(col, alpha);
         }
@@ -339,8 +347,8 @@ export class Cosmos {
           if (d > 0.5) discard;
           float core = smoothstep(0.5, 0.0, d);
           float hot = pow(core, 4.0);
-          vec3 col = mix(vColor, vec3(1.0), hot * 0.55) * (0.5 + hot * 2.0) * uGlow;
-          gl_FragColor = vec4(col, core * (0.35 + hot * 0.55));
+          vec3 col = mix(vColor, vec3(1.0), hot * 0.45) * (0.45 + hot * 1.7) * uGlow;
+          gl_FragColor = vec4(col, core * (0.24 + hot * 0.42));
         }
       `,
       transparent: true,
@@ -398,7 +406,7 @@ export class Cosmos {
         uTime: { value: 0 },
         uSpeed: { value: this.params.speed },
         uRotation: { value: this.params.rotation },
-        uPointSize: { value: baseSize * 1.1 },
+        uPointSize: { value: baseSize * 0.85 },
         uPixelRatio: { value: pixelRatio },
         uGlow: { value: this.params.glow * 0.6 },
         uPointer: { value: this.pointer },
@@ -440,7 +448,7 @@ export class Cosmos {
           vDist = -mvPosition.z;
 
           gl_PointSize = min(uPointSize * aScale * (300.0 / max(vDist, 1.0)) * uPixelRatio, 20.0 * uPixelRatio);
-          vAlpha = 0.18 + 0.2 * sin(uTime * 0.7 + aRandom * 12.0) + 0.1;
+          vAlpha = 0.07 + 0.12 * sin(uTime * 0.7 + aRandom * 12.0) + 0.05;
         }
       `,
       fragmentShader: /* glsl */ `
@@ -455,7 +463,7 @@ export class Cosmos {
           if (d > 0.5) discard;
           float soft = pow(smoothstep(0.5, 0.0, d), 2.6);
           float atten = 1.0 / (1.0 + vDist * 0.014);
-          gl_FragColor = vec4(vColor * uGlow * atten, soft * vAlpha * 0.5);
+          gl_FragColor = vec4(vColor * uGlow * atten, soft * vAlpha * 0.34);
         }
       `,
       transparent: true,
@@ -505,7 +513,7 @@ export class Cosmos {
         nebCol[i3 + 1] = color.g * b;
         nebCol[i3 + 2] = color.b * b;
 
-        nebScale[idx] = 90 + rng.random() * 150;
+        nebScale[idx] = 14 + rng.random() * 26;
         nebRandom[idx] = rng.random();
         idx++;
       }
@@ -522,7 +530,7 @@ export class Cosmos {
         uTime: { value: 0 },
         uPixelRatio: { value: pixelRatio },
         uGlow: { value: this.params.glow },
-        uOpacity: { value: 0.075 }
+        uOpacity: { value: 0.022 }
       },
       vertexShader: /* glsl */ `
         uniform float uTime;
@@ -570,7 +578,8 @@ export class Cosmos {
     /* ================================================================
        5. HALO DEL DISCO GALÁCTICO — resplandor difuso en el plano
        ================================================================ */
-    const diskGeometry = new THREE.PlaneGeometry(R * 3.4, R * 3.4, 1, 1);
+    // Halo muy sutil: basta un resplandor tenue, no un mapa de color
+    const diskGeometry = new THREE.PlaneGeometry(R * 2.0, R * 2.0, 1, 1);
     this.diskMaterial = new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
@@ -607,8 +616,8 @@ export class Cosmos {
           vec3 col = mix(uColorOuter, uColorMid, mid);
           col = mix(col, uColorInner, pow(core, 5.0));
 
-          float alpha = core * core * 0.32 * uGlow;
-          gl_FragColor = vec4(col * alpha * 3.0, alpha);
+          float alpha = core * core * 0.028 * uGlow;
+          gl_FragColor = vec4(col * alpha, alpha);
         }
       `,
       transparent: true,

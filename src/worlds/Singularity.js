@@ -178,9 +178,10 @@ export class Singularity {
 
           gl_PointSize = min(uPointSize * aScale * (300.0 / max(vDist, 1.0)) * uPixelRatio, 22.0 * uPixelRatio);
 
-          // Efecto Doppler: lado que se acerca más brillante
+          // Efecto Doppler: el lado que se acerca al observador brilla más
           vec3 viewDir = normalize(-mvPosition.xyz);
-          float doppler = dot(normalize(vec3(-sin(angle), 0.0, cos(angle))), viewDir.xz);
+          vec2 velocityDir = vec2(-sin(angle), cos(angle));
+          float doppler = dot(velocityDir, normalize(viewDir.xz));
           vAlpha = 0.5 + 0.5 * doppler * 1.6;
         }
       `,
